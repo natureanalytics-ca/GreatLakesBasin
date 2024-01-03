@@ -1,0 +1,25 @@
+
+/* Favicon */
+.fav_icon {
+  background: url("Your logo example.png");
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 5px;
+  height: 64px;
+  width: 64px;
+  display: inline-block;
+  margin-top: 5px;
+  margin-left: -2px;
+  opacity: 1;
+}
+
+/*Font Awesome update*/
+@import url(https://use.fontawesome.com/releases/v6.4.0/css/all.css);
+
+/*Font .input-group-text*/
+body, label, input, output, h1, h2, h3, h4, h5, h6, .progress, .text,
+button, .btn, .card-title, .card-tabs, .card-body, .form-control,  select, .irs-max, .irs-min, .irs-single, .irs-from, .irs-to, .bootstrap-switch-handle-on {
+  font-family: "open sans", serif!important;
+  font-size: 1.1vw!important;
+}

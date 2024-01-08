@@ -83,6 +83,10 @@ body<-dashboardBody(
   tabItems(
     tabItem(
       tabName = "home",
+    ),
+    tabItem(
+      tabName = "visTool",
+      mapUI(id = "map")
     )
   )
 )

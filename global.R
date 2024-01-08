@@ -20,7 +20,10 @@ library(shinyalert)
 #App specific libraries
 #-------------------------
 
+# Map libs
+library(mapboxer)
 
+source('./map.R')
 
 #------------------------------------------
 # Setup theme (fresh library)

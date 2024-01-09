@@ -24,6 +24,7 @@ library(shinyalert)
 library(mapboxer)
 
 source('./map.R')
+source('./long-point-watershed.R')
 
 #------------------------------------------
 # Setup theme (fresh library)
@@ -45,7 +46,7 @@ inputTheme <- fresh::create_theme(
   bs4dash_yiq(
     contrasted_threshold = 10,
     text_dark = "#FFF", #allows switch to white if not enough contrast
-    text_light = "#272c30" #allow swicth to dark grey if not enough contrast
+    text_light = "#272c30" #allow switch to dark grey if not enough contrast
   ),
   
   #Layout options

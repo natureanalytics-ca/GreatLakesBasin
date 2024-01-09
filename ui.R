@@ -87,6 +87,10 @@ body<-dashboardBody(
     tabItem(
       tabName = "visTool",
       mapUI(id = "map")
+    ),
+    tabItem(
+      tabName = "useCase",
+      lpwUI(id = "lpw")
     )
   )
 )

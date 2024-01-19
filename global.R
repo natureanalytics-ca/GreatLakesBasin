@@ -22,7 +22,8 @@ library(shinyalert)
 
 # Map libs
 library(mapboxer)
-
+library(RColorBrewer)
+source('./layers.R')
 source('./map.R')
 source('./long-point-watershed.R')
 

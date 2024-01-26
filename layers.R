@@ -69,6 +69,10 @@ sources <- list(
     type = 'raster',
     tiles = list(paste0(url, 'land_cover/{z}/{x}/{y}.pbf'))
   ),
+  'nutrient' = mapbox_source(
+    type = 'vector',
+    tiles = list(paste0(url, 'nutrient/{z}/{x}/{y}.pbf'))
+  ),
   'slope' = mapbox_source(
     type = 'raster',
     tiles = list(paste0(url, 'slope/{z}/{x}/{y}.pbf'))
@@ -355,6 +359,125 @@ vector_layers <- list(
     'name' = 'US Census Tracts',
     'tooltip' = '<b>{{name}}</b>',
     'popup' = genPopUp('name')
+  ),
+  'glbind_latest_nutrient' = list(
+    'style' = list(
+      'id' = 'glbind_latest_nutrient',
+      'type' = 'circle',
+      'source' = 'nutrient',
+      'source-layer' = 'glbind_latest_nutrient',
+      'paint' = list(
+        'circle-color' = list(
+          'interpolate',
+          list('linear'),
+          list('get', 'total_nitrogen_mg_l'),
+          0.10000000149011612,
+          '#FAA0A0',
+          20,
+          '#7C3030'
+        ),
+        'circle-stroke-color' = '#808080'
+      ),
+      'layout' = list(
+        'visibility' = 'none'
+      )
+    ),
+    'name' = 'Great Lakes Basin Integrated Nutrient Dataset',
+    'tooltip' = '<b>{{location}}</b>',
+    'popup' = genPopUp(
+      'location',
+      c(
+        'source',
+        'station',
+        'hu8_catchment',
+        'total_nitrogen_mg_l',
+        'total_phosphorus_mg_l'
+      )
+    )
+  ),
+  'sparrow_nitrogen' = list(
+    'style' = list(
+      'id' = 'sparrow_nitrogen',
+      'type' = 'fill',
+      'source' = 'nutrient',
+      'source-layer' = 'sparrow_nitrogen',
+      'paint' = list(
+        'fill-color' = list(
+          'interpolate',
+          list('linear'),
+          list('get', 'accumulated_load_kg'),
+          0,
+          '#FAA0A0',
+          776812396.0815,
+          '#7C3030'
+        ),
+        'fill-opacity' = 0.4,
+        'fill-outline-color' = '#808080'
+      ),
+      'layout' = list(
+        'visibility' = 'none'
+      )
+    ),
+    'name' = 'SPARROW Nitrogen',
+    'tooltip' = '<b>{{stream_name}}</b>',
+    'popup' = genPopUp(
+      'stream_name',
+      c(
+        'major_drainage_area',
+        'tributary',
+        'hu8_catchment',
+        'accumulated_load_kg',
+        'incremental_load_kg',
+        'accumulated_yield_kg_km2',
+        'incremental_yield_kg_km2',
+        'delivered_accumulated_load_kg',
+        'delivered_accumulated_yield_kg_km2',
+        'delivered_incremental_load_kg',
+        'delivered_incremental_yield_kg_km2'
+      )
+    )
+  ),
+  'sparrow_phosphorus' = list(
+    'style' = list(
+      'id' = 'sparrow_phosphorus',
+      'type' = 'fill',
+      'source' = 'nutrient',
+      'source-layer' = 'sparrow_phosphorus',
+      'paint' = list(
+        'fill-color' = list(
+          'interpolate',
+          list('linear'),
+          list('get', 'accumulated_load_kg'),
+          0,
+          '#FAA0A0',
+          72957068.2188,
+          '#7C3030'
+        ),
+        'fill-opacity' = 0.4,
+        'fill-outline-color' = '#808080'
+      ),
+      'layout' = list(
+        'visibility' = 'none'
+      )
+    ),
+    'name' = 'SPARROW Phosphorus',
+    'tooltip' = '<b>{{stream_name}}</b>',
+    'popup' = genPopUp(
+      'stream_name',
+      c(
+        'major_drainage_area',
+        'tributary',
+        'hu8_catchment',
+        'accumulated_load_kg',
+        'incremental_load_kg',
+        'accumulated_yield_kg_km2',
+        'incremental_yield_kg_km2',
+        'delivered_accumulated_load_kg',
+        'delivered_accumulated_yield_kg_km2',
+        'delivered_incremental_load_kg',
+        'delivered_incremental_yield_kg_km2'
+      )
+    )
   ),
   'on_wetland' = list(
     'style' = list(

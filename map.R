@@ -84,6 +84,10 @@ mapServer <- function(input, output, session) {
       id='land_cover'
     ) %>%
     add_source(
+      sources[['nutrient']],
+      id='nutrient'
+    ) %>%
+    add_source(
       sources[['slope']],
       id = 'slope'
     ) %>%
@@ -122,6 +126,9 @@ mapServer <- function(input, output, session) {
     add_layer(vector_layers[['on_waterbody']][['style']]) %>%
     add_layer(vector_layers[['us_wetland']][['style']]) %>%
     add_layer(vector_layers[['on_wetland']][['style']]) %>%
+    add_layer(vector_layers[['sparrow_phosphorus']][['style']]) %>%
+    add_layer(vector_layers[['sparrow_nitrogen']][['style']]) %>%
+    add_layer(vector_layers[['glbind_latest_nutrient']][['style']]) %>%
     add_layer(vector_layers[['us_county']][['style']]) %>%
     add_layer(vector_layers[['us_tract']][['style']]) %>%
     add_layer(vector_layers[['on_census_subdivision']][['style']]) %>%
@@ -146,6 +153,9 @@ mapServer <- function(input, output, session) {
     add_tooltips('on_waterbody', vector_layers[['on_waterbody']][['tooltip']]) %>%
     add_tooltips('us_wetland', vector_layers[['us_wetland']][['tooltip']]) %>%
     add_tooltips('on_wetland', vector_layers[['on_wetland']][['tooltip']]) %>%
+    add_tooltips('sparrow_phosphorus', vector_layers[['sparrow_phosphorus']][['tooltip']]) %>%
+    add_tooltips('sparrow_nitrogen', vector_layers[['sparrow_nitrogen']][['tooltip']]) %>%
+    add_tooltips('glbind_latest_nutrient', vector_layers[['glbind_latest_nutrient']][['tooltip']]) %>%
     add_tooltips('us_county', vector_layers[['us_county']][['tooltip']]) %>%
     add_tooltips('us_tract', vector_layers[['us_tract']][['tooltip']]) %>%
     add_tooltips('on_census_subdivision', vector_layers[['on_census_subdivision']][['tooltip']]) %>%
@@ -171,6 +181,9 @@ mapServer <- function(input, output, session) {
     add_popups('on_waterbody', vector_layers[['on_waterbody']][['popup']]) %>%
     add_popups('us_wetland', vector_layers[['us_wetland']][['popup']]) %>%
     add_popups('on_wetland', vector_layers[['on_wetland']][['popup']]) %>%
+    add_popups('sparrow_phosphorus', vector_layers[['sparrow_phosphorus']][['popup']]) %>%
+    add_popups('sparrow_nitrogen', vector_layers[['sparrow_nitrogen']][['popup']]) %>%
+    add_popups('glbind_latest_nutrient', vector_layers[['glbind_latest_nutrient']][['popup']]) %>%
     add_popups('us_county', vector_layers[['us_county']][['popup']]) %>%
     add_popups('us_tract', vector_layers[['us_tract']][['popup']]) %>%
     add_popups('on_census_subdivision', vector_layers[['on_census_subdivision']][['popup']]) %>%

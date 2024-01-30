@@ -253,9 +253,9 @@ vector_layers <- list(
       'source' = 'boundary',
       'source-layer' = 'adm2',
       'paint' = list(
-        'fill-color' = '#7CFC00',
+        'fill-color' = '#D3D3D3',
         'fill-opacity' = 0.4,
-        'fill-outline-color' = '#006400'
+        'fill-outline-color' = '#808080'
       ),
       'layout' = list(
         'visibility' = 'none'
@@ -553,7 +553,7 @@ vector_layers <- list(
     ),
     'name' = 'US Waterbodies',
     'tooltip' = '<b>{{name}}</b>',
-    genPopUp('name', 'type')
+    'popup' = genPopUp('name', 'type')
   ),
   'on_watercourse' = list(
     'style' = list(
@@ -571,7 +571,7 @@ vector_layers <- list(
     ),
     'name' = 'ON Watercourses',
     'tooltip' = '<b>{{name}}</b>',
-    genPopUp('name', 'type')
+    'popup' = genPopUp('name', 'type')
   ),
   'us_watercourse' = list(
     'style' = list(
@@ -589,7 +589,7 @@ vector_layers <- list(
     ),
     'name' = 'US Watercourses',
     'tooltip' = '<b>{{name}}</b>',
-    genPopUp('name', 'type')
+    'popup' = genPopUp('name', 'type')
   ),
   'bathymetry_contour' = list(
     'style' = list(
@@ -615,7 +615,7 @@ vector_layers <- list(
     ),
     'name' = 'Bathymetry Contours',
     'tooltip' = '<b>{{depth}}</b>',
-    genPopUp('depth')
+    'popup' = genPopUp('depth')
   ),
   'on_geology' = list(
     'style' = list(
@@ -680,7 +680,7 @@ vector_layers <- list(
     ),
     'name' = 'ON Geology',
     'tooltip' = '<b>{{unit_name}}</b>',
-    genPopUp('unit_name', c('strat', 'rock_type'))
+    'popup' = genPopUp('unit_name', c('strat', 'rock_type'))
   ),
   'us_geology' = list(
     'style' = list(
@@ -725,7 +725,7 @@ vector_layers <- list(
     ),
     'name' = 'US Geology',
     'tooltip' = '<b>{{rock_type}}</b>',
-    genPopUp('rock_type', 'unit_link')
+    'popup' = genPopUp('rock_type', 'unit_link')
   ),
   'on_farm_area' = list(
     'style' = list(
@@ -752,7 +752,7 @@ vector_layers <- list(
     ),
     'name' = 'ON Agriculture',
     'tooltip' = '<b>{{ccsname}}</b>',
-    genPopUp('ccsname', c('farmed_area_ha'))
+    'popup' = genPopUp('ccsname', c('farmed_area_ha'))
   ),
   'us_farm_area' = list(
     'style' = list(
@@ -779,7 +779,7 @@ vector_layers <- list(
     ),
     'name' = 'US Agriculture',
     'tooltip' = '<b>{{fips}}</b>',
-    genPopUp('fips', c('farmed_area_percent'))
+    'popup' = genPopUp('fips', c('farmed_area_percent'))
   )
 )
 

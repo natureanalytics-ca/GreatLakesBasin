@@ -139,6 +139,7 @@ mapServer <- function(input, output, session) {
     add_layer(vector_layers[['owb_tertiary']][['style']]) %>%
     add_layer(vector_layers[['owb_secondary']][['style']]) %>%
     add_layer(vector_layers[['owb_primary']][['style']]) %>%
+    add_layer(vector_layers[['ca_watershed_tkn']][['style']]) %>%
     add_layer(vector_layers[['ca_watershed']][['style']]) %>%
     
     # Add mouseover tooltips from layers.R
@@ -167,6 +168,7 @@ mapServer <- function(input, output, session) {
     add_tooltips('owb_tertiary', vector_layers[['owb_tertiary']][['tooltip']]) %>%
     add_tooltips('owb_secondary', vector_layers[['owb_secondary']][['tooltip']]) %>%
     add_tooltips('owb_primary', vector_layers[['owb_primary']][['tooltip']]) %>%
+    add_tooltips('ca_watershed_tkn', vector_layers[['ca_watershed_tkn']][['tooltip']]) %>%
     add_tooltips('ca_watershed', vector_layers[['ca_watershed']][['tooltip']]) %>%
   
     # Add mouse click popups from layers.R
@@ -174,9 +176,9 @@ mapServer <- function(input, output, session) {
     add_popups('on_farm_area', vector_layers[['on_farm_area']][['popup']]) %>%
     add_popups('us_geology', vector_layers[['us_geology']][['popup']]) %>%
     add_popups('on_geology', vector_layers[['on_geology']][['popup']]) %>%
-    # add_popups('bathymetry_contour', vector_layers[['bathymetry_contour']][['popup']]) %>%
-    # add_popups('us_watercourse', vector_layers[['us_watercourse']][['popup']]) %>%
-    # add_popups('on_watercourse', vector_layers[['on_watercourse']][['popup']]) %>%
+    add_popups('bathymetry_contour', vector_layers[['bathymetry_contour']][['popup']]) %>%
+    add_popups('us_watercourse', vector_layers[['us_watercourse']][['popup']]) %>%
+    add_popups('on_watercourse', vector_layers[['on_watercourse']][['popup']]) %>%
     add_popups('us_waterbody', vector_layers[['us_waterbody']][['popup']]) %>%
     add_popups('on_waterbody', vector_layers[['on_waterbody']][['popup']]) %>%
     add_popups('us_wetland', vector_layers[['us_wetland']][['popup']]) %>%
@@ -195,10 +197,12 @@ mapServer <- function(input, output, session) {
     add_popups('owb_tertiary', vector_layers[['owb_tertiary']][['popup']]) %>%
     add_popups('owb_secondary', vector_layers[['owb_secondary']][['popup']]) %>%
     add_popups('owb_primary', vector_layers[['owb_primary']][['popup']]) %>%
+    # add_popups('ca_watershed_tkn', vector_layers[['ca_watershed_tkn']][['popup']]) %>%
     add_popups('ca_watershed', vector_layers[['ca_watershed']][['popup']])
   
   output$map <- renderMapboxer({map})
   
+  # Set raster layer visibility - choice of one via radio buttons.
   observe({
     sel <- input$rasterSel
     proxy <- mapboxer_proxy(ns("map"))
@@ -210,6 +214,8 @@ mapServer <- function(input, output, session) {
       }
     }
   })
+  
+  # Set vector layer visibility - multiple choices via checkboxes.
   observe({
     sel <- input$vectorSel
     proxy <- mapboxer_proxy(ns("map"))
@@ -219,6 +225,38 @@ mapServer <- function(input, output, session) {
       } else {
         proxy %>% set_layout_property(lyr, 'visibility', FALSE) %>% update_mapboxer()
       }
+    }
+  })
+  
+  # Add map feature click events for modal tables - only supports TKN at the moment.
+  observeEvent(input$map_onclick, {
+    e <- input$map_onclick
+    lyr <- e$layer_id
+    if (lyr %in% names(vector_layers) && 'table' %in% names(vector_layers[[lyr]])) {
+      id <- e$props$name
+      tbl <- vector_layers[[lyr]][['table']]
+      output$tbl <- DT::renderDataTable({
+        datatable(
+          tbl[tbl$id == id, names(tbl)[names(tbl) != 'id']],
+          rownames = FALSE
+        )
+      })
+      showModal(
+        modalDialog(
+          title = id,
+          HTML(
+            whisker.render(
+              vector_layers[[lyr]][['popup']],
+              e$props
+            )
+          ),
+          br(),
+          DT::dataTableOutput(ns("tbl")),
+          size = "l",
+          easyClose = TRUE,
+          footer = NULL
+        )
+      )
     }
   })
 }

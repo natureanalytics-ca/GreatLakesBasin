@@ -1,8 +1,15 @@
 url <- 'https://mappingon.ca/data2/'
 # url <- 'http://192.168.18.14:8081/data/'
 
-genPopUp <- function(title, fields=NULL) {
-  txt <- paste0('<h5>{{', title, '}}</h5>')
+tbls <- './data'
+tknFile <- file.path(tbls, 'ca_data_ofat_watershed_tkn_ts.csv')
+
+genPopUp <- function(title=NULL, fields=NULL) {
+  if (!is.null(title)) {
+    txt <- paste0('<h5>{{', title, '}}</h5>')
+  } else {
+    txt <- ''
+  }
   if (!is.null(fields)) {
     for (f in fields) {
       txt <- paste0(txt, '<b>', f, ': </b>{{', f, '}}</br>')
@@ -161,14 +168,45 @@ vector_layers <- list(
         'tallgrass_savannah',
         'tallgrass_woodland',
         'sand_gravel_mine_tailings_extraction',
-        'bedrock',
+        'bedrock'
+      )
+    )
+  ),
+  'ca_watershed_tkn' = list(
+    'style' = list(
+      'id' = 'ca_watershed_tkn',
+      'type' = 'fill',
+      'source' = 'ca_watershed',
+      'source-layer' = 'ca_watershed_tkn',
+      'paint' = list(
+        'fill-color' = list(
+          'interpolate',
+          list('linear'),
+          list('get', 'wetland_prop'),
+          -2.0441108,
+          '#FFFFE0',
+          -0.55196029,
+          '#FF4500'
+        ),
+        'fill-opacity' = 0.4,
+        'fill-outline-color' = '#690E0E'
+      ),
+      'layout' = list(
+        'visibility' = 'none'
+      )
+    ),
+    'name' = 'Conservation Authority Watersheds: TKN',
+    'tooltip' = '<b>{{name}}</b>',
+    'popup' = genPopUp(
+      NULL, c(
         'log10_area',
         'community_prop',
         'ag_prop',
         'wetland_prop',
         'treed_prop'
       )
-    )
+    ),
+    'table' = read.csv(tknFile)
   ),
   'owb_primary' = list(
     'style' = list(

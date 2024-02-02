@@ -125,7 +125,7 @@ vector_layers <- list(
         'fill-outline-color' = '#690E0E'
       ),
       'layout' = list(
-        'visibility' = 'visible'
+        'visibility' = 'none'
       )
     ),
     'name' = 'Conservation Authority Watersheds',
@@ -830,7 +830,7 @@ raster_layers = list(
       'type' = 'raster',
       'source' = 'bathymetry',
       'layout' = list(
-        'visibility' = 'visible'
+        'visibility' = 'none'
       )
     ),
     'name' = 'Bathymetry'

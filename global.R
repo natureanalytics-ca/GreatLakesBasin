@@ -25,6 +25,7 @@ library(mapboxer)
 library(RColorBrewer)
 library(DT)
 library(whisker)
+library(colourpicker)
 source('./layers.R')
 source('./map.R')
 source('./long-point-watershed.R')
@@ -46,11 +47,11 @@ inputTheme <- fresh::create_theme(
   ),
   
   #Color contrast
-  bs4dash_yiq(
-    contrasted_threshold = 10,
-    text_dark = "#FFF", #allows switch to white if not enough contrast
-    text_light = "#272c30" #allow switch to dark grey if not enough contrast
-  ),
+  # bs4dash_yiq(
+  #   contrasted_threshold = 10,
+  #   text_dark = "#FFF", #allows switch to white if not enough contrast
+  #   text_light = "#272c30" #allow switch to dark grey if not enough contrast
+  # ),
   
   #Layout options
   bs4dash_layout(
@@ -62,25 +63,44 @@ inputTheme <- fresh::create_theme(
     control_sidebar_width = NULL,
     boxed_layout_max_width = NULL,
     screen_header_collapse = NULL,
-    main_bg = NULL,
+    main_bg = "#fcfcfc",
     content_padding_x = NULL,
     content_padding_y = NULL
   ),
   
+  # "#fcfcfc" a very light grey - main bg
+  # "#c2c7d0" light grey - sidebar text
+  #"#343a40" Dark grey - side bar bg
+  
   #Sidebar skin
   bs4dash_sidebar_light(
-    bg = NULL,
-    hover_bg = NULL,
-    color = NULL,
-    hover_color = NULL,
-    active_color = NULL,
-    submenu_bg = NULL,
-    submenu_color = NULL,
-    submenu_hover_color = NULL,
-    submenu_hover_bg = NULL,
-    submenu_active_color = NULL,
-    submenu_active_bg = NULL,
-    header_color = NULL
+    bg = "#343a40",
+    hover_bg = "#343a40",
+    color = "#c2c7d0",
+    hover_color = "#FFFFFF",
+    active_color = "#c2c7d0",
+    submenu_color = "#c2c7d0",
+    submenu_hover_color = "#FFFFFF",
+    submenu_active_color = "#FFFFFF",
+    submenu_bg = "#343a40",
+    submenu_hover_bg = "#343a40",
+    submenu_active_bg = "#343a40",
+    header_color = "#343a40"
+  ),
+  
+  bs4dash_sidebar_dark(
+    bg = "#343a40",
+    hover_bg = "#343a40",
+    color = "#c2c7d0",
+    hover_color = "#FFFFFF",
+    active_color = "#c2c7d0",
+    submenu_color = "#c2c7d0",
+    submenu_hover_color = "#FFFFFF",
+    submenu_active_color = "#FFFFFF",
+    submenu_bg = "#343a40",
+    submenu_hover_bg = "#343a40",
+    submenu_active_bg = "#343a40",
+    header_color = "#343a40"
   ),
   
   #Status custom colors
@@ -153,8 +173,8 @@ inputTheme <- fresh::create_theme(
 #"Shiny", "Flat", "Big", "Modern", "Sharp", "Round", "Square", "Nice", "Simple", "HTML5"
 #------------------------------------
 inputSliderSkin<-chooseSliderSkin(
-  skin = "Modern",
-  color = "red" #Colors work with: 'Shiny', "Flat', 'Modern', 'HTML5'
+  skin = "Shiny",
+  color = "#343a40" #Colors work with: 'Shiny', "Flat', 'Modern', 'HTML5'
 )
 
 #-----------------------------------------------------

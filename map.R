@@ -1,29 +1,68 @@
 # Define UI for map tab.
 mapUI <- function(id) {
   ns <- NS(id)
-  fluidRow(
-    column(
-      12,
-      mapboxerOutput(ns('map'), height=800),
-      br(),
-      fluidRow(
-        column(
-          6,
-          checkboxGroupInput(
-            ns('vectorSel'),
-            'Vector Layers',
-            selected = 'ca_watershed',
-            choiceNames = as.vector(unlist(vector_layers)[grepl('.name',names(unlist(vector_layers)),fixed=T)]),
-            choiceValues = names(vector_layers)
-          )
-        ),
-        column(
-          6,
-          radioButtons(
-            ns('rasterSel'),
-            'Raster Layers',
-            choiceNames = c(as.vector(unlist(raster_layers)[grepl('.name',names(unlist(raster_layers)),fixed=T)]), 'None'),
-            choiceValues = c(names(raster_layers), 'none')
+  tagList(
+    fluidRow(
+      column(
+        8,
+        box(
+          title = "Great Lake visualization tool",
+          width = 12,
+          status = "primary",
+          collapsible = FALSE,
+          mapboxerOutput(ns('map'), height=500)
+        )
+      ),
+      column(
+        4,
+        tabBox(
+          type = 'tabs',
+          width = 12,
+          status = "primary",
+          collapsible = FALSE,
+          tabPanel(
+            title = "Vector",
+            pickerInput(
+              ns('vectorSel'),
+              'Vector layers',
+              multiple = TRUE,
+              #selected = 'ca_watershed',
+              #choiceNames = as.vector(unlist(vector_reactive)[grepl('.name',names(unlist(vector_reactive)),fixed=T)]),
+              #choiceValues = names(vector_reactive)
+              choices = setNames(
+                names(vector_layers),
+                as.vector(unlist(vector_layers)[grepl('.name',names(unlist(vector_layers)),fixed=T)])
+              ),
+              options = pickerOptions(
+                dropdownAlignRight = 'auto',
+                maxOptions = 3,
+                maxOptionsText = "Select up to 3",
+              )
+            ),
+            br(),
+            uiOutput(ns("vecCol1")),
+            br(),
+            uiOutput(ns("vecCol2")),
+            br(),
+            uiOutput(ns("vecCol3"))
+          ),
+          tabPanel(
+            title = "Raster",
+            pickerInput(
+              ns('rasterSel'),
+              'Raster layers',
+              #choiceNames = c(as.vector(unlist(raster_layers)[grepl('.name',names(unlist(raster_layers)),fixed=T)]), 'None'),
+              #choiceValues = c(names(raster_layers), 'none')
+              multiple = TRUE,
+              choices = setNames(
+                c(names(raster_layers)),
+                c(as.vector(unlist(raster_layers)[grepl('.name',names(unlist(raster_layers)),fixed=T)]))
+              ),
+              options = pickerOptions(
+                dropdownAlignRight = 'auto',
+                maxOptions = 1
+              )
+            )
           )
         )
       )
@@ -38,7 +77,7 @@ mapServer <- function(input, output, session) {
   # Render map
   map <- mapboxer(
     center = c(-84.066, 45.727),
-    zoom = 5,
+    zoom = 4.7,
     minZoom = 4,
     maxZoom = 12,
     style = basemaps$Carto$positron
@@ -207,7 +246,7 @@ mapServer <- function(input, output, session) {
     sel <- input$rasterSel
     proxy <- mapboxer_proxy(ns("map"))
     for (lyr in c(names(raster_layers))) {
-      if (lyr == sel) {
+      if (lyr %in% sel) {
         proxy %>% set_layout_property(lyr, 'visibility', TRUE) %>% update_mapboxer()
       } else {
         proxy %>% set_layout_property(lyr, 'visibility', FALSE) %>% update_mapboxer()
@@ -227,6 +266,7 @@ mapServer <- function(input, output, session) {
       }
     }
   })
+  
   
   # Add map feature click events for modal tables - only supports TKN at the moment.
   observeEvent(input$map_onclick, {
@@ -259,4 +299,379 @@ mapServer <- function(input, output, session) {
       )
     }
   })
+  
+  #--------------------------------
+  #Color selector for vector layers
+  #--------------------------------
+  
+  vector_reactive<-reactiveVal(vector_layers)
+
+  #Vector selection 1
+  output$vecCol1<-renderUI({
+    req(input$vectorSel[1])
+
+    sel <- input$vectorSel[1]
+    nm <- c(as.vector(unlist(vector_reactive())[grepl('.name',names(unlist(vector_reactive())),fixed=T)]))[which(names(vector_reactive()) == sel)]
+    fillInterpolate <- vector_reactive()[[sel]]$style$paint[[1]][[1]] != "match"
+    
+    if(fillInterpolate) {
+      fillType <- vector_reactive()[[sel]]$style$type
+      fillLower <- ifelse(
+        NROW(vector_reactive()[[sel]]$style$paint[[paste0(fillType, '-color')]]) == 1,
+        vector_reactive()[[sel]]$style$paint[[paste0(fillType, '-color')]],
+        vector_reactive()[[sel]]$style$paint[[paste0(fillType, '-color')]][[5]]
+      )
+      fillUpper <- ifelse(
+        NROW(vector_reactive()[[sel]]$style$paint[[paste0(fillType, '-color')]]) == 1,
+        NA,
+        vector_reactive()[[sel]]$style$paint[[paste0(fillType, '-color')]][[7]]
+      )
+      opacity <- vector_reactive()[[sel]]$style$paint[['fill-opacity']]
+      
+      tagList(
+        tags$small(tags$strong(nm)),
+        div(
+          style = "float: right;",
+          actionButton(
+            inputId = ns("refreshVec1"),
+            label = NULL,
+            icon = icon("rotate"),
+            style = "background-color: rgba(0,0,0,0)!important;
+                                        color: #343a40;
+                                        border-style: none;"
+          )
+        ),
+        fluidRow(
+          column(
+            4,
+            colourInput(
+              inputId = ns("vecCol1Lower"),
+              label = tags$small(ifelse(!is.na(fillUpper), "Fill lower", "Fill")),
+              value = fillLower,
+              allowTransparent = FALSE,
+              showColour = "background",
+              width = "100%"
+            )
+          ),
+          column(
+            4,
+            if(!is.na(fillUpper)){
+              colourInput(
+                inputId = ns("vecCol1Upper"),
+                label = tags$small("Fill upper"),
+                value = fillUpper,
+                allowTransparent = FALSE,
+                showColour = "background",
+                width = "100%"
+              )
+            }
+          ),
+          column(
+            4,
+            div(
+              style = "margin: 0px 0px; width: 100%;",
+              numericInput(
+                inputId = ns("vecOpacity1"), 
+                label = tags$small("Opacity"), 
+                min = 0, 
+                max = 1,
+                step = 0.05,
+                value = opacity,
+                width = "100%"
+              )
+            )
+          )
+        ),
+        fluidRow(
+          
+        )
+      )
+    } else {
+      tagList(
+        strong(nm),
+        br(),
+        tags$small(tags$em("Properties not available"))
+      )
+    }
+  })
+  
+  #Sel 1
+  observeEvent(input$refreshVec1, {
+    req(input$vectorSel[1])
+    sel <- input$vectorSel[1]
+    proxy <- mapboxer_proxy(ns("map"))
+    fillType <- vector_reactive()[[sel]]$style$type
+    fillInterpolate <- vector_reactive()[[sel]]$style$paint[[1]][[1]] != "match"
+    if(fillInterpolate) {
+
+      colLower <- input$vecCol1Lower
+      colUpper <- input$vecCol1Upper
+      opacity <- input$vecOpacity1
+      vector_tmp <- vector_reactive()
+      
+      if(NROW(vector_reactive()[[sel]]$style$paint[[paste0(fillType, '-color')]]) == 1){
+        vector_tmp[[sel]]$style$paint[[paste0(fillType, '-color')]] <- colLower
+        vector_tmp[[sel]]$style$paint[['fill-opacity']] <- opacity
+        vector_reactive(vector_tmp)
+        proxy %>%
+          set_paint_property(sel, paste0(fillType, '-color'), colLower) %>%
+          set_paint_property(sel, 'fill-opacity', opacity) %>%
+          update_mapboxer()
+      } else {
+        vector_tmp[[sel]]$style$paint[[paste0(fillType, '-color')]][[5]] <- colLower
+        vector_tmp[[sel]]$style$paint[[paste0(fillType, '-color')]][[7]] <- colUpper
+        vector_tmp[[sel]]$style$paint[['fill-opacity']] <- opacity
+        vector_reactive(vector_tmp)
+        proxy %>%
+          set_paint_property(sel, paste0(fillType, '-color'), vector_reactive()[[sel]]$style$paint[[paste0(fillType, '-color')]]) %>%
+          set_paint_property(sel, 'fill-opacity', vector_reactive()[[sel]]$style$paint[['fill-opacity']]) %>%
+          update_mapboxer()
+      }
+    }
+  })
+  
+  
+  #Vector selection 2
+  output$vecCol2<-renderUI({
+    req(input$vectorSel[1], input$vectorSel[2])
+
+    sel <- input$vectorSel[2]
+    nm <- c(as.vector(unlist(vector_reactive())[grepl('.name',names(unlist(vector_reactive())),fixed=T)]))[which(names(vector_reactive()) == sel)]
+    fillInterpolate <- vector_reactive()[[sel]]$style$paint[[1]][[1]] != "match"
+
+    if(fillInterpolate) {
+      fillType <- vector_reactive()[[sel]]$style$type
+      fillLower <- ifelse(
+        NROW(vector_reactive()[[sel]]$style$paint[[paste0(fillType, '-color')]]) == 1,
+        vector_reactive()[[sel]]$style$paint[[paste0(fillType, '-color')]],
+        vector_reactive()[[sel]]$style$paint[[paste0(fillType, '-color')]][[5]]
+      )
+      fillUpper <- ifelse(
+        NROW(vector_reactive()[[sel]]$style$paint[[paste0(fillType, '-color')]]) == 1,
+        NA,
+        vector_reactive()[[sel]]$style$paint[[paste0(fillType, '-color')]][[7]]
+      )
+      opacity <- vector_reactive()[[sel]]$style$paint[['fill-opacity']]
+
+      tagList(
+        tags$small(tags$strong(nm)),
+        div(
+          style = "float: right;",
+          actionButton(
+            inputId = ns("refreshVec2"),
+            label = NULL,
+            icon = icon("rotate"),
+            style = "background-color: rgba(0,0,0,0)!important;
+                                        color: #343a40;
+                                        border-style: none;"
+          )
+        ),
+        fluidRow(
+          column(
+            4,
+            colourInput(
+              inputId = ns("vecCol2Lower"),
+              label = tags$small(ifelse(!is.na(fillUpper), "Fill lower", "Fill")),
+              value = fillLower,
+              allowTransparent = FALSE,
+              showColour = "background",
+              width = "100%"
+            )
+          ),
+          column(
+            4,
+            if(!is.na(fillUpper)){
+              colourInput(
+                inputId = ns("vecCol2Upper"),
+                label = tags$small("Fill upper"),
+                value = fillUpper,
+                allowTransparent = FALSE,
+                showColour = "background",
+                width = "100%"
+              )
+            }
+          ),
+          column(
+            4,
+            div(
+              style = "margin: 0px 0px; width: 100%;",
+              numericInput(
+                inputId = ns("vecOpacity2"),
+                label = tags$small("Opacity"),
+                min = 0,
+                max = 1,
+                value = opacity,
+                step = 0.05,
+                width = "100%"
+              )
+            )
+          )
+        )
+      )
+    } else {
+      tagList(
+        strong(nm),
+        br(),
+        tags$small(tags$em("Properties not available"))
+      )
+    }
+  })
+  
+  #Sel 2
+  observeEvent(input$refreshVec2, {
+    req(input$vectorSel[1], input$vectorSel[2])
+    sel <- input$vectorSel[2]
+    proxy <- mapboxer_proxy(ns("map"))
+    fillType <- vector_reactive()[[sel]]$style$type
+    fillInterpolate <- vector_reactive()[[sel]]$style$paint[[1]][[1]] != "match"
+    if(fillInterpolate) {
+      
+      colLower <- input$vecCol2Lower
+      colUpper <- input$vecCol2Upper
+      opacity <- input$vecOpacity2
+      vector_tmp <- vector_reactive()
+      
+      if(NROW(vector_reactive()[[sel]]$style$paint[[paste0(fillType, '-color')]]) == 1){
+        vector_tmp[[sel]]$style$paint[[paste0(fillType, '-color')]] <- colLower
+        vector_tmp[[sel]]$style$paint[['fill-opacity']] <- opacity
+        vector_reactive(vector_tmp)
+        proxy %>%
+          set_paint_property(sel, paste0(fillType, '-color'), colLower) %>%
+          set_paint_property(sel, 'fill-opacity', opacity) %>%
+          update_mapboxer()
+      } else {
+        vector_tmp[[sel]]$style$paint[[paste0(fillType, '-color')]][[5]] <- colLower
+        vector_tmp[[sel]]$style$paint[[paste0(fillType, '-color')]][[7]] <- colUpper
+        vector_tmp[[sel]]$style$paint[['fill-opacity']] <- opacity
+        vector_reactive(vector_tmp)
+        proxy %>%
+          set_paint_property(sel, paste0(fillType, '-color'), vector_reactive()[[sel]]$style$paint[[paste0(fillType, '-color')]]) %>%
+          set_paint_property(sel, 'fill-opacity', vector_reactive()[[sel]]$style$paint[['fill-opacity']]) %>%
+          update_mapboxer()
+      }
+    }
+  })
+  
+  
+  #Vector selection 3
+  output$vecCol3<-renderUI({
+    req(input$vectorSel[1], input$vectorSel[2], input$vectorSel[3])
+    
+    sel <- input$vectorSel[3]
+    nm <- c(as.vector(unlist(vector_reactive())[grepl('.name',names(unlist(vector_reactive())),fixed=T)]))[which(names(vector_reactive()) == sel)]
+    fillInterpolate <- vector_reactive()[[sel]]$style$paint[[1]][[1]] != "match"
+    
+    if(fillInterpolate) {
+      fillType <- vector_reactive()[[sel]]$style$type
+      fillLower <- ifelse(
+        NROW(vector_reactive()[[sel]]$style$paint[[paste0(fillType, '-color')]]) == 1,
+        vector_reactive()[[sel]]$style$paint[[paste0(fillType, '-color')]],
+        vector_reactive()[[sel]]$style$paint[[paste0(fillType, '-color')]][[5]]
+      )
+      fillUpper <- ifelse(
+        NROW(vector_reactive()[[sel]]$style$paint[[paste0(fillType, '-color')]]) == 1,
+        NA,
+        vector_reactive()[[sel]]$style$paint[[paste0(fillType, '-color')]][[7]]
+      )
+      opacity <- vector_reactive()[[sel]]$style$paint[['fill-opacity']]
+      
+      tagList(
+        tags$small(tags$strong(nm)),
+        div(
+          style = "float: right;",
+          actionButton(
+            inputId = ns("refreshVec3"),
+            label = NULL,
+            icon = icon("rotate"),
+            style = "background-color: rgba(0,0,0,0)!important;
+                                        color: #343a40;
+                                        border-style: none;"
+          )
+        ),
+        fluidRow(
+          column(
+            4,
+            colourInput(
+              inputId = ns("vecCol3Lower"),
+              label = tags$small(ifelse(!is.na(fillUpper), "Fill lower", "Fill")),
+              value = fillLower,
+              allowTransparent = FALSE,
+              showColour = "background",
+              width = "100%"
+            )
+          ),
+          column(
+            4,
+            if(!is.na(fillUpper)){
+              colourInput(
+                inputId = ns("vecCol3Upper"),
+                label = tags$small("Fill upper"),
+                value = fillUpper,
+                allowTransparent = FALSE,
+                showColour = "background",
+                width = "100%"
+              )
+            }
+          ),
+          column(
+            4,
+            div(
+              style = "margin: 0px 0px; width: 100%;",
+              numericInput(
+                inputId = ns("vecOpacity3"),
+                label = tags$small("Opacity"),
+                min = 0,
+                max = 1,
+                value = opacity,
+                step = 0.05,
+                width = "100%"
+              )
+            )
+          )
+        )
+      )
+    } else {
+      tagList(
+        strong(nm),
+        br(),
+        tags$small(tags$em("Properties not available"))
+      )
+    }
+  })
+  
+  #Sel 3
+  observeEvent(input$refreshVec3, {
+    req(input$vectorSel[1], input$vectorSel[2], input$vectorSel[3])
+    sel <- input$vectorSel[3]
+    proxy <- mapboxer_proxy(ns("map"))
+    fillType <- vector_reactive()[[sel]]$style$type
+    fillInterpolate <- vector_reactive()[[sel]]$style$paint[[1]][[1]] != "match"
+    if(fillInterpolate) {
+      
+      colLower <- input$vecCol3Lower
+      colUpper <- input$vecCol3Upper
+      opacity <- input$vecOpacity3
+      vector_tmp <- vector_reactive()
+      
+      if(NROW(vector_reactive()[[sel]]$style$paint[[paste0(fillType, '-color')]]) == 1){
+        vector_tmp[[sel]]$style$paint[[paste0(fillType, '-color')]] <- colLower
+        vector_tmp[[sel]]$style$paint[['fill-opacity']] <- opacity
+        vector_reactive(vector_tmp)
+        proxy %>%
+          set_paint_property(sel, paste0(fillType, '-color'), colLower) %>%
+          set_paint_property(sel, 'fill-opacity', opacity) %>%
+          update_mapboxer()
+      } else {
+        vector_tmp[[sel]]$style$paint[[paste0(fillType, '-color')]][[5]] <- colLower
+        vector_tmp[[sel]]$style$paint[[paste0(fillType, '-color')]][[7]] <- colUpper
+        vector_tmp[[sel]]$style$paint[['fill-opacity']] <- opacity
+        vector_reactive(vector_tmp)
+        proxy %>%
+          set_paint_property(sel, paste0(fillType, '-color'), vector_reactive()[[sel]]$style$paint[[paste0(fillType, '-color')]]) %>%
+          set_paint_property(sel, 'fill-opacity', vector_reactive()[[sel]]$style$paint[['fill-opacity']]) %>%
+          update_mapboxer()
+      }
+    }
+  })
+  
 }

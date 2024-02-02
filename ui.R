@@ -54,7 +54,12 @@ sidebar <- dashboardSidebar(
     menuItem(
       text = tags$small("Use cases"),
       icon = icon("list"),
-      tabName = "useCase"
+      menuSubItem(
+        text = tags$small("Long Point Watershed"),
+        tabName = "useCase",
+        icon = NULL
+      )
+      
     )
   )
 )

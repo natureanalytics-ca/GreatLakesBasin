@@ -182,33 +182,33 @@ mapServer <- function(input, output, session) {
     add_layer(vector_layers[['ca_watershed']][['style']]) %>%
     
     # Add mouseover tooltips from layers.R
-    add_tooltips('us_farm_area', vector_layers[['us_farm_area']][['tooltip']]) %>%
-    add_tooltips('on_farm_area', vector_layers[['on_farm_area']][['tooltip']]) %>%
-    add_tooltips('us_geology', vector_layers[['us_geology']][['tooltip']]) %>%
-    add_tooltips('on_geology', vector_layers[['on_geology']][['tooltip']]) %>%
-    add_tooltips('bathymetry_contour', vector_layers[['bathymetry_contour']][['tooltip']]) %>%
-    add_tooltips('us_watercourse', vector_layers[['us_watercourse']][['tooltip']]) %>%
-    add_tooltips('on_watercourse', vector_layers[['on_watercourse']][['tooltip']]) %>%
-    add_tooltips('us_waterbody', vector_layers[['us_waterbody']][['tooltip']]) %>%
-    add_tooltips('on_waterbody', vector_layers[['on_waterbody']][['tooltip']]) %>%
-    add_tooltips('us_wetland', vector_layers[['us_wetland']][['tooltip']]) %>%
-    add_tooltips('on_wetland', vector_layers[['on_wetland']][['tooltip']]) %>%
-    add_tooltips('sparrow_phosphorus', vector_layers[['sparrow_phosphorus']][['tooltip']]) %>%
-    add_tooltips('sparrow_nitrogen', vector_layers[['sparrow_nitrogen']][['tooltip']]) %>%
-    add_tooltips('glbind_latest_nutrient', vector_layers[['glbind_latest_nutrient']][['tooltip']]) %>%
-    add_tooltips('us_county', vector_layers[['us_county']][['tooltip']]) %>%
-    add_tooltips('us_tract', vector_layers[['us_tract']][['tooltip']]) %>%
-    add_tooltips('on_census_subdivision', vector_layers[['on_census_subdivision']][['tooltip']]) %>%
-    add_tooltips('on_census_consolidated_subdivision', vector_layers[['on_census_consolidated_subdivision']][['tooltip']]) %>%
-    add_tooltips('on_census_consolidated_subdivision', vector_layers[['on_census_consolidated_subdivision']][['tooltip']]) %>%
-    add_tooltips('on_census_division', vector_layers[['on_census_division']][['tooltip']]) %>%
-    add_tooltips('adm2', vector_layers[['adm2']][['tooltip']]) %>%
-    add_tooltips('owb_quaternary', vector_layers[['owb_quaternary']][['tooltip']]) %>%
-    add_tooltips('owb_tertiary', vector_layers[['owb_tertiary']][['tooltip']]) %>%
-    add_tooltips('owb_secondary', vector_layers[['owb_secondary']][['tooltip']]) %>%
-    add_tooltips('owb_primary', vector_layers[['owb_primary']][['tooltip']]) %>%
-    add_tooltips('ca_watershed_tkn', vector_layers[['ca_watershed_tkn']][['tooltip']]) %>%
-    add_tooltips('ca_watershed', vector_layers[['ca_watershed']][['tooltip']]) %>%
+    add_popups('us_farm_area', mapbox_popup(vector_layers[['us_farm_area']][['tooltip']], event = 'hover')) %>%
+    add_popups('on_farm_area', mapbox_popup(vector_layers[['on_farm_area']][['tooltip']], event = 'hover')) %>%
+    add_popups('us_geology', mapbox_popup(vector_layers[['us_geology']][['tooltip']], event = 'hover')) %>%
+    add_popups('on_geology', mapbox_popup(vector_layers[['on_geology']][['tooltip']], event = 'hover')) %>%
+    add_popups('bathymetry_contour', mapbox_popup(vector_layers[['bathymetry_contour']][['tooltip']], event = 'hover')) %>%
+    add_popups('us_watercourse', mapbox_popup(vector_layers[['us_watercourse']][['tooltip']], event = 'hover')) %>%
+    add_popups('on_watercourse', mapbox_popup(vector_layers[['on_watercourse']][['tooltip']], event = 'hover')) %>%
+    add_popups('us_waterbody', mapbox_popup(vector_layers[['us_waterbody']][['tooltip']], event = 'hover')) %>%
+    add_popups('on_waterbody', mapbox_popup(vector_layers[['on_waterbody']][['tooltip']], event = 'hover')) %>%
+    add_popups('us_wetland', mapbox_popup(vector_layers[['us_wetland']][['tooltip']], event = 'hover')) %>%
+    add_popups('on_wetland', mapbox_popup(vector_layers[['on_wetland']][['tooltip']], event = 'hover')) %>%
+    add_popups('sparrow_phosphorus', mapbox_popup(vector_layers[['sparrow_phosphorus']][['tooltip']], event = 'hover')) %>%
+    add_popups('sparrow_nitrogen', mapbox_popup(vector_layers[['sparrow_nitrogen']][['tooltip']], event = 'hover')) %>%
+    add_popups('glbind_latest_nutrient', mapbox_popup(vector_layers[['glbind_latest_nutrient']][['tooltip']], event = 'hover')) %>%
+    add_popups('us_county', mapbox_popup(vector_layers[['us_county']][['tooltip']], event = 'hover')) %>%
+    add_popups('us_tract', mapbox_popup(vector_layers[['us_tract']][['tooltip']], event = 'hover')) %>%
+    add_popups('on_census_subdivision', mapbox_popup(vector_layers[['on_census_subdivision']][['tooltip']], event = 'hover')) %>%
+    add_popups('on_census_consolidated_subdivision', mapbox_popup(vector_layers[['on_census_consolidated_subdivision']][['tooltip']], event = 'hover')) %>%
+    add_popups('on_census_consolidated_subdivision', mapbox_popup(vector_layers[['on_census_consolidated_subdivision']][['tooltip']], event = 'hover')) %>%
+    add_popups('on_census_division', mapbox_popup(vector_layers[['on_census_division']][['tooltip']], event = 'hover')) %>%
+    add_popups('adm2', mapbox_popup(vector_layers[['adm2']][['tooltip']], event = 'hover')) %>%
+    add_popups('owb_quaternary', mapbox_popup(vector_layers[['owb_quaternary']][['tooltip']], event = 'hover')) %>%
+    add_popups('owb_tertiary', mapbox_popup(vector_layers[['owb_tertiary']][['tooltip']], event = 'hover')) %>%
+    add_popups('owb_secondary', mapbox_popup(vector_layers[['owb_secondary']][['tooltip']], event = 'hover')) %>%
+    add_popups('owb_primary', mapbox_popup(vector_layers[['owb_primary']][['tooltip']], event = 'hover')) %>%
+    add_popups('ca_watershed_tkn', mapbox_popup(vector_layers[['ca_watershed_tkn']][['tooltip']], event = 'hover')) %>%
+    add_popups('ca_watershed', mapbox_popup(vector_layers[['ca_watershed']][['tooltip']], event = 'hover')) %>%
   
     # Add mouse click popups from layers.R
     add_popups('us_farm_area', vector_layers[['us_farm_area']][['popup']]) %>%
@@ -313,7 +313,6 @@ mapServer <- function(input, output, session) {
     sel <- input$vectorSel[1]
     nm <- c(as.vector(unlist(vector_reactive())[grepl('.name',names(unlist(vector_reactive())),fixed=T)]))[which(names(vector_reactive()) == sel)]
     fillInterpolate <- vector_reactive()[[sel]]$style$paint[[1]][[1]] != "match"
-    
     if(fillInterpolate) {
       fillType <- vector_reactive()[[sel]]$style$type
       fillLower <- ifelse(
@@ -327,7 +326,6 @@ mapServer <- function(input, output, session) {
         vector_reactive()[[sel]]$style$paint[[paste0(fillType, '-color')]][[7]]
       )
       opacity <- vector_reactive()[[sel]]$style$paint[['fill-opacity']]
-      
       tagList(
         tags$small(tags$strong(nm)),
         div(
@@ -402,6 +400,7 @@ mapServer <- function(input, output, session) {
     proxy <- mapboxer_proxy(ns("map"))
     fillType <- vector_reactive()[[sel]]$style$type
     fillInterpolate <- vector_reactive()[[sel]]$style$paint[[1]][[1]] != "match"
+    
     if(fillInterpolate) {
 
       colLower <- input$vecCol1Lower
@@ -552,7 +551,6 @@ mapServer <- function(input, output, session) {
     }
   })
   
-  
   #Vector selection 3
   output$vecCol3<-renderUI({
     req(input$vectorSel[1], input$vectorSel[2], input$vectorSel[3])
@@ -674,4 +672,54 @@ mapServer <- function(input, output, session) {
     }
   })
   
+  # Add legends to map.
+  observe({
+    vectorSel <- input$vectorSel
+    react <- vector_reactive()
+    runjs(paste0("$('.mapboxgl-ctrl.mapboxer-legend-ctrl').remove();"))
+    proxy <- mapboxer_proxy(ns("map"))
+    
+    # Add vector layers in order selected.
+    for (i in vectorSel) {
+      fillInterpolate <- vector_reactive()[[i]]$style$paint[[1]][[1]] != "match"
+      if (fillInterpolate) {
+        fillType <- vector_reactive()[[i]]$style$type
+        if (NROW(vector_reactive()[[i]]$style$paint[[paste0(fillType, '-color')]]) == 1) {
+          cols <- c(vector_reactive()[[i]]$style$paint[[paste0(fillType, '-color')]])
+          labels <- ''
+        } else {
+          cols <- c(vector_reactive()[[i]]$style$paint[[paste0(fillType, '-color')]][[7]], vector_reactive()[[i]]$style$paint[[paste0(fillType, '-color')]][[5]])
+          labels <- c(
+            vector_reactive()[[i]]$style$paint[[paste0(fillType, '-color')]][[6]],
+            vector_reactive()[[i]]$style$paint[[paste0(fillType, '-color')]][[4]]
+          )
+        }
+      } else {
+        labels <- unlist(vector_layers[['on_geology']]$style$paint$`fill-color`[c(TRUE, FALSE)])[-c(1)]
+        labels <- labels[-c(length(labels))]
+        cols <- unlist(vector_layers[['on_geology']]$style$paint$`fill-color`[c(FALSE, TRUE)][-c(1)])
+      }
+      proxy %>%
+        add_legend_control(
+          cols,
+          labels,
+          title = paste0('<b>', vector_reactive()[[i]][['name']], '</b>'),
+          pos = "top-left"
+        ) %>% update_mapboxer()
+    }
+    
+    # Add raster layer if present and a legend exists in layers.R.
+    rasterSel <- input$rasterSel
+    if (!is.null(rasterSel) && 'legend' %in% names(raster_layers[[rasterSel]])) {
+      cols <- as.vector(raster_layers[[rasterSel]][['legend']])
+      labels <- names(raster_layers[[rasterSel]][['legend']])
+      proxy %>%
+        add_legend_control(
+          cols,
+          labels,
+          title = paste0('<b>', raster_layers[[rasterSel]][['name']], '</b>'),
+          pos = "top-left"
+        ) %>% update_mapboxer()
+    }
+  })
 }

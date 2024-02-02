@@ -833,7 +833,11 @@ raster_layers = list(
         'visibility' = 'none'
       )
     ),
-    'name' = 'Bathymetry'
+    'name' = 'Bathymetry',
+    'legend' = c(
+      '60 m' = '#ffffff',
+      '-320 m' = '#000000'
+    )
   ),
   'slope' = list(
     'style' = list(
@@ -844,7 +848,11 @@ raster_layers = list(
         'visibility' = 'none'
       )
     ),
-    'name' = 'Slope'
+    'name' = 'Slope',
+    'legend' = c(
+      '62°' = '#ffffff',
+      '0°' = '#000000'
+    )
   ),
   'elevation' = list(
     'style' = list(
@@ -855,7 +863,11 @@ raster_layers = list(
         'visibility' = 'none'
       )
     ),
-    'name' = 'Elevation'
+    'name' = 'Elevation',
+    'legend' = c(
+      '924 m' = '#ffffff',
+      '56 m' = '#000000'
+    )
   ),
   'hillshade' = list(
     'style' = list(
@@ -877,6 +889,27 @@ raster_layers = list(
         'visibility' = 'none'
       )
     ),
-    'name' = 'Land Cover'
+    'name' = 'Land Cover',
+    'legend' = c(
+      'Temperate or sub-polar needleleaf forest'='#003d00',
+      'Sub-polar taiga needleleaf forest'='#949c70',
+      'Tropical or sub-tropical broadleaf evergreen forest'='#006300',
+      'Tropical or sub-tropical broadleaf deciduous forest'='#1eab05',
+      'Temperate or sub-polar broadleaf deciduous forest'='#148c3d',
+      'Mixed forest'='#5c752b',
+      'Tropical or sub-tropical shrubland'='#b39e2b',
+      'Temperate or sub-polar shrubland'='#b38a33',
+      'Tropical or sub-tropical grassland'='#e8dc5e',
+      'Temperate or sub-polar grassland'='#e1cf8a',
+      'Sub-polar or polar shrubland-lichen-moss'='#9c7554',
+      'Sub-polar or polar grassland-lichen-moss'='#bad48f',
+      'Sub-polar or polar barren-lichen-moss'='#408a70',
+      'Wetland'='#6ba38a',
+      'Cropland'='#e6ae66',
+      'Barren land'='#a8abae',
+      'Urban and built-up'='#dc2126',
+      'Water'='#4c70a3',
+      'Snow and ice'='#fffaff'
+    )
   )
 )

@@ -690,9 +690,14 @@
     },
     "mapboxer": {
       "Package": "mapboxer",
-      "Version": "0.4.0",
-      "Source": "Repository",
-      "Repository": "RSPM",
+      "Version": "0.4.1.9000",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "crazycapivara",
+      "RemoteRepo": "mapboxer",
+      "RemoteRef": "develop",
+      "RemoteSha": "3b444851dd5faec76d4c8b9de3e36d4692ce2489",
       "Requirements": [
         "R",
         "geojsonsf",
@@ -703,7 +708,7 @@
         "purrr",
         "yaml"
       ],
-      "Hash": "d3724836470c725270fa5822306c96be"
+      "Hash": "5ae05cddd71281ab1ec5177b3d1a60a6"
     },
     "memoise": {
       "Package": "memoise",
@@ -789,6 +794,18 @@
         "askpass"
       ],
       "Hash": "2a0dc8c6adfb6f032e4d4af82d258ab5"
+    },
+    "packrat": {
+      "Package": "packrat",
+      "Version": "0.9.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "tools",
+        "utils"
+      ],
+      "Hash": "55ddd2d4a1959535f18393478b0c14a6"
     },
     "pillar": {
       "Package": "pillar",
@@ -909,6 +926,28 @@
         "yaml"
       ],
       "Hash": "d65e35823c817f09f4de424fcdfa812a"
+    },
+    "rsconnect": {
+      "Package": "rsconnect",
+      "Version": "1.2.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "cli",
+        "curl",
+        "digest",
+        "jsonlite",
+        "lifecycle",
+        "openssl",
+        "packrat",
+        "renv",
+        "rlang",
+        "rstudioapi",
+        "tools",
+        "yaml"
+      ],
+      "Hash": "c064d4993aedbf6c383041d1606aabeb"
     },
     "rstudioapi": {
       "Package": "rstudioapi",

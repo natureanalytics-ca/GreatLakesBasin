@@ -6,7 +6,7 @@ mapUI <- function(id) {
       column(
         8,
         box(
-          title = "Great Lake visualization tool",
+          title = "Laurentian Great Lakes visualization tool",
           width = 12,
           status = "primary",
           collapsible = FALSE,

@@ -244,7 +244,7 @@ mapServer <- function(input, output, session) {
   # Set raster layer visibility - choice of one via radio buttons.
   observe({
     sel <- input$rasterSel
-    proxy <- mapboxer_proxy(ns("map"))
+    proxy <- mapboxer_proxy(ns("map"), session)
     for (lyr in c(names(raster_layers))) {
       if (lyr %in% sel) {
         proxy %>% set_layout_property(lyr, 'visibility', TRUE) %>% update_mapboxer()
@@ -257,7 +257,7 @@ mapServer <- function(input, output, session) {
   # Set vector layer visibility - multiple choices via checkboxes.
   observe({
     sel <- input$vectorSel
-    proxy <- mapboxer_proxy(ns("map"))
+    proxy <- mapboxer_proxy(ns("map"), session)
     for (lyr in c(names(vector_layers))) {
       if (lyr %in% sel) {
         proxy %>% set_layout_property(lyr, 'visibility', TRUE) %>% update_mapboxer()
@@ -397,7 +397,7 @@ mapServer <- function(input, output, session) {
   observeEvent(input$refreshVec1, {
     req(input$vectorSel[1])
     sel <- input$vectorSel[1]
-    proxy <- mapboxer_proxy(ns("map"))
+    proxy <- mapboxer_proxy(ns("map"), session)
     fillType <- vector_reactive()[[sel]]$style$type
     fillInterpolate <- vector_reactive()[[sel]]$style$paint[[1]][[1]] != "match"
     
@@ -520,7 +520,7 @@ mapServer <- function(input, output, session) {
   observeEvent(input$refreshVec2, {
     req(input$vectorSel[1], input$vectorSel[2])
     sel <- input$vectorSel[2]
-    proxy <- mapboxer_proxy(ns("map"))
+    proxy <- mapboxer_proxy(ns("map"), session)
     fillType <- vector_reactive()[[sel]]$style$type
     fillInterpolate <- vector_reactive()[[sel]]$style$paint[[1]][[1]] != "match"
     if(fillInterpolate) {
@@ -641,7 +641,7 @@ mapServer <- function(input, output, session) {
   observeEvent(input$refreshVec3, {
     req(input$vectorSel[1], input$vectorSel[2], input$vectorSel[3])
     sel <- input$vectorSel[3]
-    proxy <- mapboxer_proxy(ns("map"))
+    proxy <- mapboxer_proxy(ns("map"), session)
     fillType <- vector_reactive()[[sel]]$style$type
     fillInterpolate <- vector_reactive()[[sel]]$style$paint[[1]][[1]] != "match"
     if(fillInterpolate) {
@@ -677,7 +677,7 @@ mapServer <- function(input, output, session) {
     vectorSel <- input$vectorSel
     react <- vector_reactive()
     runjs(paste0("$('.mapboxgl-ctrl.mapboxer-legend-ctrl').remove();"))
-    proxy <- mapboxer_proxy(ns("map"))
+    proxy <- mapboxer_proxy(ns("map"), session)
     
     # Add vector layers in order selected.
     for (i in vectorSel) {

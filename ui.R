@@ -37,6 +37,7 @@ sidebar <- dashboardSidebar(
   #Items
   #-------------
   sidebarMenu(
+    id='appMenu',
     menuItem(
       tabName = "home",
       text = icon(
@@ -55,7 +56,7 @@ sidebar <- dashboardSidebar(
       text = tags$small("Use cases"),
       icon = icon("list"),
       menuSubItem(
-        text = tags$small("Long Point Watershed"),
+        text = tags$small("Thames River Watershed"),
         tabName = "useCase",
         icon = NULL
       )
@@ -95,7 +96,7 @@ body<-dashboardBody(
     ),
     tabItem(
       tabName = "useCase",
-      lpwUI(id = "lpw")
+      twUI(id = "tw")
     )
   )
 )

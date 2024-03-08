@@ -1,0 +1,16 @@
+nutrient,name,unit,generalized
+TP,Phosphorus Total,mg/l,P
+TDP,Phosphorus Total Dissolved,mg/l,P
+SRP,Phosphorus Soluble Reactive,mg/l,P
+PP,Phosphorus Particulate,mg/l,P
+TN,Nitrogen Total,mg/l,N
+TDN,Nitrogen Total Dissolved,mg/l,N
+NO23,Nitrite and Nitrate,mg/l,N
+NO2,Nitrite,mg/l,N
+NO3,Nitrate,mg/l,N
+NH3,Ammonia,mg/l,N
+TKN,Nitrogen Kjeldahl Total ,mg/l,N
+PN,Nitrogen Particulate,mg/l,N
+TSS,Total Suspended Solids (non-filterable residue),mg/l,
+TURB-FTU,Turbidity (Formazin),FTU,
+TURB-NTU,Turbidity (Nephelometric),NTU,

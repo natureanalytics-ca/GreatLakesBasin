@@ -26,9 +26,12 @@ library(RColorBrewer)
 library(DT)
 library(whisker)
 library(colourpicker)
+library(magrittr)
+library(leaflet)
+library(sf)
 source('./layers.R')
 source('./map.R')
-source('./long-point-watershed.R')
+source('./thames-watershed.R')
 
 #------------------------------------------
 # Setup theme (fresh library)

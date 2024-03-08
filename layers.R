@@ -1,4 +1,5 @@
 url <- 'https://mappingon.ca/data2/'
+styleURL <- 'https://mappingon.ca/styles2/'
 # url <- 'http://192.168.18.14:8081/data/'
 
 tbls <- './data'

@@ -5,15 +5,6 @@
 #------------------------
 
 header <- dashboardHeader(
-  
-  #Branding for the app - client logo, link to website, etc.
-  # title = dashboardBrand(
-  #   title = "Your brand",
-  #   color = "primary",
-  #   href = "https://www.google.com",
-  #   image = "https://natureanalytics.ca/wp-content/uploads/2021/09/Your-logo-example-e1632748674383.png",
-  # ),
-  
   controlbarIcon = shiny::icon("gear"),
   compact = FALSE,
   fixed = TRUE
@@ -40,21 +31,23 @@ sidebar <- dashboardSidebar(
     id='appMenu',
     menuItem(
       tabName = "home",
-      text = icon(
-        name = NULL,
-        class = "fav_icon"
+      text = tagList(
+        icon(
+          name = NULL,
+          class = "fav_icon"
+        ),
+        div(
+          style = "position: absolute; margin-top: 10px; top: 5px; left: 100px;",
+          h1("Laurentian Great Lakes"),
+          tags$small(tags$em("Spatial toolkit prototype")),
+        )
       )
     ),
     br(),
     br(),
     menuItem(
-      text = tags$small("Visualization tool"),
-      icon = icon("globe"),
-      tabName = "visTool"
-    ),
-    menuItem(
-      text = tags$small("Use cases"),
-      icon = icon("list"),
+      text = tags$small("Applications"),
+      icon = icon("water"),
       menuSubItem(
         text = tags$small("Thames River Watershed"),
         tabName = "useCase",
@@ -89,9 +82,6 @@ body<-dashboardBody(
   tabItems(
     tabItem(
       tabName = "home",
-    ),
-    tabItem(
-      tabName = "visTool",
       mapUI(id = "map")
     ),
     tabItem(

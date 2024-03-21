@@ -28,20 +28,76 @@ upperThamesStations <- upperThamesStations[upperThamesStations$station_no %in% u
 # Define UI for tab.
 twUI <- function(id) {
   ns <- NS(id)
-  fluidRow(
-    tags$style(
-      type = "text/css",
-      "
-        #tw-thamesMap {
-          height: calc(100vh - 165px) !important;
-          padding-top: 0px;
-          padding-right: 0px;
-          padding-bottom: 0px;
-          padding-left: 0px;
-        }
-      "
+  tagList(
+    div (
+      style="display: flex; flex-direction: row; flex-wrap: wrap; width: 100%; align-items: stretch; padding: 0rem 7.5px 10px 7.5px;",
+      #column 1
+      div(
+        style = "
+          flex-grow: 100; 
+          align-content: stretch; 
+          background:
+            linear-gradient(
+              to right, 
+              #c20430 0%,
+              #fcfcfc 100%
+               
+            )
+            left 
+            bottom
+            no-repeat; 
+          border-radius: 3px; 
+          border-style: none; 
+          color: #343a40;
+          
+          margin: 0px; 
+          padding: 5px 20px;",
+        div(
+          style = "color: white;",
+          "Thames River Watershed"
+        )
+      ),
+      
+      #column 2
+      div(style="display: flex; flex-direction: row; justify-content: flex-end; flex-grow: 1;",
+          shinyWidgets::dropdown(
+            style = "simple",
+            status = "royal",
+            icon = icon('info'),
+            right = TRUE,
+            size = "md",
+            div(
+              style = "width: 500px; padding: 20px;",
+              h6("Thames River Watershed"),
+              tags$small("Test.")
+            )
+          )
+          
+      )
     ),
-    leafletOutput(ns('thamesMap'))
+    
+    tabBox(
+      title = "",
+      maximizable = FALSE,
+      collapsible = FALSE,
+      collapsed = FALSE,
+      width = 12,
+      solidHeader = FALSE,
+      status = NULL,
+      type = "tabs",
+      tabPanel(
+        title = icon("map"),
+        fluidRow(
+          leafletOutput(ns('thamesMap'))
+        )
+      ),
+      tabPanel(
+        title = icon("circle-info")
+      ),
+      tabPanel(
+        title = icon("chart-simple")
+      )
+    )
   )
 }
 

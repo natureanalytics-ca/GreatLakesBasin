@@ -1,7 +1,7 @@
 
 /* Favicon */
 .fav_icon {
-  background: url("Your logo example.png");
+  background: url("UofG_Cornerstone_rgb.png");
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
@@ -22,4 +22,28 @@ body, label, input, output, h1, h2, h3, h4, h5, h6, .progress, .text,
 button, .btn, .card-title, .card-tabs, .card-body, .form-control,  select, .irs-max, .irs-min, .irs-single, .irs-from, .irs-to, .bootstrap-switch-handle-on {
   font-family: "open sans", serif!important;
   font-size: 1.1vw!important;
+}
+
+
+/*ShinyWidgets buttons - manual change using 'royal' option*/
+.bttn-royal {
+    color: #343a40!important;
+    background-color: #fcfcfc!important;
+    border: 2px solid #c2c7d080!important;
+    border-radius 5px;
+    padding: 3px 12px!important;
+}
+
+.bttn-default {
+    color: #fcfcfc!important;
+    background-color: #343a4000!important;
+}
+
+/*Thames river watershed*/
+#tw-thamesMap {
+  height: calc(100vh - 165px)!important;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
 }

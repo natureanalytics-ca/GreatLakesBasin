@@ -108,11 +108,11 @@ inputTheme <- fresh::create_theme(
   
   #Status custom colors
   bs4dash_status(
-    primary = NULL,
+    primary = "#c20430",
     secondary = NULL,
     success = NULL,
     info = NULL,
-    warning = NULL,
+    warning = "#ffc500",
     danger = NULL,
     light = NULL,
     dark = NULL
@@ -176,9 +176,16 @@ inputTheme <- fresh::create_theme(
 #"Shiny", "Flat", "Big", "Modern", "Sharp", "Round", "Square", "Nice", "Simple", "HTML5"
 #------------------------------------
 inputSliderSkin<-chooseSliderSkin(
-  skin = "Shiny",
+  skin = "Flat",
   color = "#343a40" #Colors work with: 'Shiny', "Flat', 'Modern', 'HTML5'
 )
+
+#-----------------------------
+#Recalculating
+#----------------------------
+
+#shinycssloaders, attached to re-calc of individual plots, graphics
+options(spinner.color="black", spinner.type=4)
 
 #-----------------------------------------------------
 #Footer - For client use (turned off in UI by default)

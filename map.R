@@ -2,69 +2,146 @@
 mapUI <- function(id) {
   ns <- NS(id)
   tagList(
-    fluidRow(
-      column(
-        8,
-        box(
-          title = "Laurentian Great Lakes visualization tool",
-          width = 12,
-          status = "primary",
-          collapsible = FALSE,
-          mapboxerOutput(ns('map'), height=500)
+    div (
+      style="display: flex; flex-direction: row; flex-wrap: wrap; width: 100%; align-items: stretch; padding: 0rem 7.5px 10px 7.5px;",
+      #column 1
+      div(
+        style = "
+          flex-grow: 100; 
+          align-content: stretch; 
+          background:
+            linear-gradient(
+              to right, 
+              #c20430 0%,
+              #fcfcfc 100%
+               
+            )
+            left 
+            bottom
+            no-repeat; 
+          border-radius: 3px; 
+          border-style: none; 
+          color: #343a40;
+          
+          margin: 0px; 
+          padding: 5px 20px;",
+        div(
+          style = "color: white;",
+          "Laurentian Great Lakes"
         )
       ),
-      column(
-        4,
-        tabBox(
-          type = 'tabs',
-          width = 12,
-          status = "primary",
-          collapsible = FALSE,
-          tabPanel(
-            title = "Vector",
-            pickerInput(
-              ns('vectorSel'),
-              'Vector layers',
-              multiple = TRUE,
-              #selected = 'ca_watershed',
-              #choiceNames = as.vector(unlist(vector_reactive)[grepl('.name',names(unlist(vector_reactive)),fixed=T)]),
-              #choiceValues = names(vector_reactive)
-              choices = setNames(
-                names(vector_layers),
-                as.vector(unlist(vector_layers)[grepl('.name',names(unlist(vector_layers)),fixed=T)])
-              ),
-              options = pickerOptions(
-                dropdownAlignRight = 'auto',
-                maxOptions = 3,
-                maxOptionsText = "Select up to 3",
-              )
-            ),
-            br(),
-            uiOutput(ns("vecCol1")),
-            br(),
-            uiOutput(ns("vecCol2")),
-            br(),
-            uiOutput(ns("vecCol3"))
-          ),
-          tabPanel(
-            title = "Raster",
-            pickerInput(
-              ns('rasterSel'),
-              'Raster layers',
-              #choiceNames = c(as.vector(unlist(raster_layers)[grepl('.name',names(unlist(raster_layers)),fixed=T)]), 'None'),
-              #choiceValues = c(names(raster_layers), 'none')
-              multiple = TRUE,
-              choices = setNames(
-                c(names(raster_layers)),
-                c(as.vector(unlist(raster_layers)[grepl('.name',names(unlist(raster_layers)),fixed=T)]))
-              ),
-              options = pickerOptions(
-                dropdownAlignRight = 'auto',
-                maxOptions = 1
-              )
+      
+      #column 2
+      div(style="display: flex; flex-direction: row; justify-content: flex-end; flex-grow: 1;",
+          shinyWidgets::dropdown(
+            style = "simple",
+            status = "royal",
+            icon = icon('info'),
+            right = TRUE,
+            size = "md",
+            div(
+              style = "width: 500px; padding: 20px;",
+              h6("Visualization tool"),
+              tags$small("Test.")
             )
           )
+          
+      )
+    ),
+    
+    tabBox(
+      title = "",
+      maximizable = FALSE,
+      collapsible = FALSE,
+      collapsed = FALSE,
+      width = 12,
+      solidHeader = FALSE,
+      status = NULL,
+      type = "tabs",
+      tabPanel(
+        title = icon("map"),
+        fluidRow(
+          column(
+            1,
+            div(
+              align = "center",
+              style = "
+                height: 100%; 
+                min-width: 35px;
+                max-width: 50px;
+                background:
+                linear-gradient(
+                  to bottom, 
+                  #343a40 0%,
+                  #343a4050 100%
+                )
+                no-repeat; 
+                border-radius: 5px; 
+                border-style: none; 
+                ",
+              div(
+                align = "left",
+                shinyWidgets::dropdown(
+                  style = "simple",
+                  status = "default",
+                  size = "lg",
+                  width = "400px",
+                  icon = icon("layer-group"),
+                  tooltip = tooltipOptions(title = "Vector layers"),
+                  pickerInput(
+                    ns('vectorSel'),
+                    label = 'Vector layers',
+                    multiple = TRUE,
+                    choices = setNames(
+                      names(vector_layers),
+                      as.vector(unlist(vector_layers)[grepl('.name',names(unlist(vector_layers)),fixed=T)])
+                    ),
+                    options = pickerOptions(
+                      dropdownAlignRight = 'auto',
+                      maxOptions = 3,
+                      maxOptionsText = "Select up to 3",
+                      style = 'color: #343a40;'
+                    )
+                  ),
+                  hr(),
+                  uiOutput(ns("vecCol1")),
+                  br(),
+                  uiOutput(ns("vecCol2")),
+                  br(),
+                  uiOutput(ns("vecCol3"))
+                ),
+                shinyWidgets::dropdown(
+                  style = "simple",
+                  status = "default",
+                  size = "lg",
+                  width = "400px",
+                  icon = icon("table-cells-large"),
+                  tooltip = tooltipOptions(title = "Raster layers"),
+                  pickerInput(
+                    ns('rasterSel'),
+                    'Raster layers',
+                    multiple = TRUE,
+                    choices = setNames(
+                      c(names(raster_layers)),
+                      c(as.vector(unlist(raster_layers)[grepl('.name',names(unlist(raster_layers)),fixed=T)]))
+                    ),
+                    options = pickerOptions(
+                      dropdownAlignRight = 'auto',
+                      maxOptions = 1
+                    )
+                  )
+                )
+              )
+            )
+          ),
+          column(
+             11,
+             mapboxerOutput(ns('map'), height=450)
+          )
         )
+      ),
+      tabPanel(
+        title = icon("circle-info")
       )
     )
   )
@@ -267,7 +344,6 @@ mapServer <- function(input, output, session) {
     }
   })
   
-  
   # Add map feature click events for modal tables - only supports TKN at the moment.
   observeEvent(input$map_onclick, {
     e <- input$map_onclick
@@ -327,16 +403,16 @@ mapServer <- function(input, output, session) {
       )
       opacity <- vector_reactive()[[sel]]$style$paint[['fill-opacity']]
       tagList(
-        tags$small(tags$strong(nm)),
         div(
-          style = "float: right;",
+          style="display: flex; flex-direction: row; flex-wrap: wrap; justify-content: space-between; width: 100%; align-items: center;",
+          tags$small(tags$strong(nm)),
           actionButton(
             inputId = ns("refreshVec1"),
             label = NULL,
             icon = icon("rotate"),
             style = "background-color: rgba(0,0,0,0)!important;
-                                        color: #343a40;
-                                        border-style: none;"
+                                      color: #343a40;
+                                      border-style: none;"
           )
         ),
         fluidRow(
@@ -368,13 +444,14 @@ mapServer <- function(input, output, session) {
             4,
             div(
               style = "margin: 0px 0px; width: 100%;",
-              numericInput(
+              sliderInput(
                 inputId = ns("vecOpacity1"), 
                 label = tags$small("Opacity"), 
                 min = 0, 
                 max = 1,
                 step = 0.05,
                 value = opacity,
+                ticks = FALSE,
                 width = "100%"
               )
             )
@@ -453,9 +530,9 @@ mapServer <- function(input, output, session) {
       opacity <- vector_reactive()[[sel]]$style$paint[['fill-opacity']]
 
       tagList(
-        tags$small(tags$strong(nm)),
         div(
-          style = "float: right;",
+          style="display: flex; flex-direction: row; flex-wrap: wrap; justify-content: space-between; width: 100%; align-items: center;",
+          tags$small(tags$strong(nm)),
           actionButton(
             inputId = ns("refreshVec2"),
             label = NULL,
@@ -494,13 +571,14 @@ mapServer <- function(input, output, session) {
             4,
             div(
               style = "margin: 0px 0px; width: 100%;",
-              numericInput(
+              sliderInput(
                 inputId = ns("vecOpacity2"),
                 label = tags$small("Opacity"),
                 min = 0,
                 max = 1,
                 value = opacity,
                 step = 0.05,
+                ticks = FALSE,
                 width = "100%"
               )
             )
@@ -574,9 +652,9 @@ mapServer <- function(input, output, session) {
       opacity <- vector_reactive()[[sel]]$style$paint[['fill-opacity']]
       
       tagList(
-        tags$small(tags$strong(nm)),
         div(
-          style = "float: right;",
+          style="display: flex; flex-direction: row; flex-wrap: wrap; justify-content: space-between; width: 100%; align-items: center;",
+          tags$small(tags$strong(nm)),
           actionButton(
             inputId = ns("refreshVec3"),
             label = NULL,
@@ -615,13 +693,14 @@ mapServer <- function(input, output, session) {
             4,
             div(
               style = "margin: 0px 0px; width: 100%;",
-              numericInput(
+              sliderInput(
                 inputId = ns("vecOpacity3"),
                 label = tags$small("Opacity"),
                 min = 0,
                 max = 1,
                 value = opacity,
                 step = 0.05,
+                ticks = FALSE,
                 width = "100%"
               )
             )

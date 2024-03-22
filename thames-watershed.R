@@ -28,6 +28,9 @@ upperThamesStations <- upperThamesStations[upperThamesStations$station_no %in% u
 # Define UI for tab.
 twUI <- function(id) {
   ns <- NS(id)
+  
+  autoWaiter(ns("thamesMap"))
+  
   tagList(
     div (
       style="display: flex; flex-direction: row; flex-wrap: wrap; width: 100%; align-items: stretch; padding: 0rem 7.5px 10px 7.5px;",
@@ -86,9 +89,166 @@ twUI <- function(id) {
       status = NULL,
       type = "tabs",
       tabPanel(
-        title = icon("map"),
+        title = icon("location-dot"),
         fluidRow(
-          leafletOutput(ns('thamesMap'))
+          column(
+            1,
+            div(
+              align = "center",
+              style = "
+                height: 100%; 
+                min-width: 35px;
+                max-width: 50px;
+                background:
+                linear-gradient(
+                  to bottom, 
+                  #343a40 0%,
+                  #343a4050 100%
+                )
+                no-repeat; 
+                border-radius: 5px; 
+                border-style: none; 
+                ",
+              div(
+                align = "left",
+                shinyWidgets::dropdown(
+                  style = "simple",
+                  status = "default",
+                  size = "lg",
+                  width = "400px",
+                  icon = icon("layer-group"),
+                  tooltip = tooltipOptions(title = "Data layers"),
+                  pickerInput(
+                    ns('featureLayers'),
+                    'Data layers (select multiple)',
+                    multiple = TRUE,
+                    choices = setNames(
+                      c(
+                        'hydatStation',
+                        'glbindStation',
+                        'upperThamesStation',
+                        'sparrow',
+                        'soil',
+                        'geology'
+                      ),
+                      c(
+                        'HYDAT Flow and Level Stations',
+                        'GLBIND Nutrient Stations',
+                        'Upper Thames Water Temperature Stations',
+                        'SPARROW Nutrient Catchments',
+                        'Soil complex',
+                        'Bedrock Geology'
+                      )
+                    ),
+                    choicesOpt = list(
+                      content = c(
+                        "<div> <i class='fas fa-circle-dot' style = 'color: gold;'></i> HYDAT Flow and Level Stations </div>",
+                        "<div> <i class='fas fa-circle-dot' style = 'color: firebrick;'></i> GLBIND Nutrient Stations </div>",
+                        "<div> <i class='fas fa-circle-dot' style = 'color: violet;'></i> Upper Thames Water Temperature Stations </div>",
+                        "<div> <i class='fas fa-square-full' style = 'color: purple;'></i> SPARROW Nutrient Catchments </div>",
+                        "<div> <i class='fas fa-square-full' style = 'color: brown;'></i> Soil complex </div>",
+                        "<div> <i class='fas fa-square-full' style = 'color: tomato;'></i> 'Bedrock Geology' </div>"
+                      )
+                    ),
+                    options = pickerOptions(
+                      dropdownAlignRight = 'auto'
+                    )
+                  ),
+                ),
+                shinyWidgets::dropdown(
+                  style = "simple",
+                  status = "default",
+                  size = "lg",
+                  width = "400px",
+                  icon = icon("road"),
+                  tooltip = tooltipOptions(title = "Contextual layers"),
+                  pickerInput(
+                    ns('contextualLayers'),
+                    'Contextual layers (select multiple)',
+                    multiple = TRUE,
+                    selected = 'place',
+                    choices = setNames(
+                      c(
+                        'place',
+                        'censusSubdivision',
+                        'censusDivision',
+                        'owbQuaternary',
+                        'owbTertiary',
+                        'watershedBounds'
+                      ),
+                      c(
+                        'Places',
+                        'Census subdivisions',
+                        'Census divisions',
+                        'Quaternary watersheds',
+                        'Tertiary watersheds',
+                        'Watershed bounds'
+                      )
+                    ),
+                    choicesOpt = list(
+                      content = c(
+                        "<div> <i class='fas fa-square' style = 'color: black;'></i> Places </div>",
+                        "<div> <i class='fas fa-square' style = 'color: #A9A9A9;'></i> Census subdivisions </div>",
+                        "<div> <i class='fas fa-square' style = 'color: #343a40;'></i> Census divisions </div>",
+                        "<div> <i class='fas fa-square' style = 'color: #191970;'></i> Quaternary watersheds </div>",
+                        "<div> <i class='fas fa-square' style = 'color: #0047AB;'></i> Tertiary watersheds </div>",
+                        "<div> <i class='fas fa-square' style = 'color: black;'></i> Watershed bounds </div>"
+                      )
+                    ),
+                    options = pickerOptions(
+                      dropdownAlignRight = 'auto'
+                    )
+                  ),
+                  br(),
+                  prettySwitch(
+                    ns('labels'),
+                    'Labels',
+                    value = TRUE
+                  )
+                ),
+                shinyWidgets::dropdown(
+                  style = "simple",
+                  status = "default",
+                  size = "lg",
+                  width = "400px",
+                  icon = icon("map"),
+                  tooltip = tooltipOptions(title = "Base layers"),
+                  pickerInput(
+                    ns('baseSel'),
+                    'Base layers (select one)',
+                    multiple = TRUE,
+                    selected = 'Cartographic',
+                    choices = setNames(
+                      c('Cartographic', 'Terrain', 'Landcover'),
+                      c('Cartographic', 'Terrain', 'Landcover')
+                     
+                    ),
+                    options = pickerOptions(
+                      maxOptions = 1,
+                      dropdownAlignRight = 'auto'
+                    )
+                  )
+                )
+              )
+            )
+          ),
+          column(
+            11,
+            
+            leafletOutput(ns('thamesMap')),
+            shinyjs::hidden(
+              div(
+                id = ns('loading'), 
+                align = "center",
+                style = "position: absolute; top: 100px; left: 0%; width: 100%;",
+                addSpinner(
+                  div(), spin = "circle", color = "#c20430"
+                ),
+                br(),
+                "Rendering takes 30 seconds ..."
+              )
+            )
+          )
         )
       ),
       tabPanel(
@@ -104,15 +264,23 @@ twUI <- function(id) {
 # Define server logic
 twServer <- function(input, output, session) {
   ns <- session$ns
-  
+
   # Generate map.
   output$thamesMap <- renderLeaflet({
+    shinyjs::showElement(id = ns("loading"), asis=TRUE)
     leaflet(
       options = leafletOptions(
-        minZoom = 8, maxZoom = 13
-      )
+        minZoom = 8, maxZoom = 14, zoomControl = FALSE
+      ) 
     ) %>%
-      setView(-81.67, 42.72, 8) %>%
+      htmlwidgets::onRender("function(el, x) {
+        L.control.zoom({ position: 'bottomleft' }).addTo(this)
+    }") %>%
+    setView(-80.7, 42.8, 8) %>%
+    
+      #-----------
+      #Base layers
+      #-----------
       addTiles(
         paste0(styleURL, 'cartographic/{z}/{x}/{y}.png'),
         group = 'Cartographic'
@@ -127,12 +295,174 @@ twServer <- function(input, output, session) {
         group = 'Landcover'
       ) %>%
       hideGroup("Landcover") %>%
+      
+      #-----------------
+      #Contextual layers
+      #-----------------
+      addMapPane("placeLowZoom_pane", zIndex = 460) %>%
+      addMapPane("placeHighZoom_pane", zIndex = 460) %>%
+      addMapPane("placeLowZoomLabels_pane", zIndex = 460) %>%
+      addMapPane("placeHighZoomLabels_pane", zIndex = 460) %>%
+      addMapPane("censusSubdivisionLabels_pane", zIndex = 455) %>%
+      addMapPane("censusSubdivision_pane", zIndex = 450) %>%
+      addMapPane("censusDivisionLabels_pane", zIndex = 445) %>%
+      addMapPane("censusDivision_pane", zIndex = 440) %>%
+      addMapPane("owbQuaternaryLabels_pane", zIndex = 435) %>%
+      addMapPane("owbQuaternary_pane", zIndex = 430) %>%
+      addMapPane("owbTertiaryLabels_pane", zIndex = 425) %>%
+      addMapPane("owbTertiary_pane", zIndex = 420) %>%
+      addMapPane("watershedBounds_pane", zIndex = 410) %>%
+      
+      addPolygons(
+        data = censusSubdivision, group = 'censusSubdivision', options = pathOptions(pane = "censusSubdivision_pane"), weight = 1, color = "#A9A9A9", fill = FALSE, opacity = 1
+      ) %>%
+      hideGroup("censusSubdivision") %>%
+      addPolygons(
+        data = censusDivision, group = 'censusDivision', options = pathOptions(pane = "censusDivision_pane"), weight = 2, color = "#343a40", fill = FALSE, opacity = 1
+      ) %>%
+      hideGroup("censusDivision") %>%
+      addPolygons(
+        data = owbQuaternary, group = 'owbQuaternary', options = pathOptions(pane = "owbQuaternary_pane"), weight = 1, color = "#191970", fill = FALSE, opacity = 1
+      ) %>%
+      hideGroup("owbQuaternary") %>%
+      addPolygons(
+        data = watershedBounds, group = 'watershedBounds', options = pathOptions(pane = "watershedBounds_pane"), weight = 2, color = "black", fill = FALSE, opacity = 1
+      ) %>%
+      hideGroup("watershedBounds") %>%
+      addPolygons(
+        data = owbTertiary, group = 'owbTertiary', options = pathOptions(pane = "owbTertiary_pane"), weight = 2, color = "#0047AB", fill = FALSE, opacity = 1
+      ) %>%
+      hideGroup("owbTertiary") %>%
+      addCircleMarkers(
+        data = placeLowZoom,
+        group = 'placeLowZoom',
+        options = pathOptions(pane = "placeLowZoom_pane"),
+        color = 'black',
+        stroke = FALSE,
+        radius = 3,
+        fillOpacity = 1
+      ) %>%
+      hideGroup("placeLowZoom") %>%
+      addCircleMarkers(
+        data = placeHighZoom,
+        group = 'placeHighZoom',
+        options = pathOptions(pane = "placeHighZoom_pane"),
+        color = 'black',
+        stroke = FALSE,
+        radius = 3,
+        fillOpacity = 1
+      ) %>%
+      hideGroup("placeHighZoom") %>%
+      
+      addLabelOnlyMarkers(
+        data = st_point_on_surface(owbQuaternary),
+        group = 'owbQuaternaryLabels',
+        options = pathOptions(pane = "owbQuaternaryLabels_pane"),
+        label = owbQuaternary$watershed_name,
+        labelOptions = labelOptions(
+          noHide = TRUE,
+          textOnly = TRUE,
+          style = list(
+            "color" = "#191970",
+            "text-shadow" = "-1px -1px 2px white, 1px -1px 2px white, -1px 1px 2px white, 1px 1px 2px white",
+            "font-size" = "8px"
+          )
+        )
+      ) %>%
+      hideGroup("owbQuaternaryLabels") %>%
+      addLabelOnlyMarkers(
+        data = st_point_on_surface(owbTertiary),
+        group = 'owbTertiaryLabels',
+        options = pathOptions(pane = "owbTertiaryLabels_pane"),
+        label = owbTertiary$watershed_name,
+        labelOptions = labelOptions(
+          noHide = TRUE,
+          textOnly = TRUE,
+          style = list(
+            "color" = "#0047AB",
+            "text-shadow" = "-1px -1px 2px white, 1px -1px 2px white, -1px 1px 2px white, 1px 1px 2px white",
+            "font-size" = "8px"
+          )
+        )
+      ) %>%
+      hideGroup("owbTertiaryLabels") %>%
+      addLabelOnlyMarkers(
+        data = st_point_on_surface(censusDivision),
+        group = 'censusDivisionLabels',
+        options = pathOptions(pane = "censusDivisionLabels_pane"),
+        label = censusDivision$name,
+        labelOptions = labelOptions(
+          noHide = TRUE,
+          textOnly = TRUE,
+          style = list(
+            "color" = "#343a40",
+            "text-shadow" = "-1px -1px 2px white, 1px -1px 2px white, -1px 1px 2px white, 1px 1px 2px white",
+            "font-size" = "8px"
+          )
+        )
+      ) %>%
+      hideGroup("censusDivisionLabels") %>%
+      addLabelOnlyMarkers(
+        data = st_point_on_surface(censusSubdivision),
+        group = 'censusSubdivisionLabels',
+        options = pathOptions(pane = "censusSubdivisionLabels_pane"),
+        label = censusSubdivision$name,
+        labelOptions = labelOptions(
+          noHide = TRUE,
+          textOnly = TRUE,
+          style = list(
+            "color" = "#A9A9A9",
+            "text-shadow" = "-1px -1px 2px white, 1px -1px 2px white, -1px 1px 2px white, 1px 1px 2px white",
+            "font-size" = "8px"
+          )
+        )
+      ) %>%
+      hideGroup("censusSubdivisionLabels") %>%
+      addLabelOnlyMarkers(
+        data = placeLowZoom,
+        group = 'placeLowZoomLabels',
+        options = pathOptions(pane = "placeLowZoomLabels_pane"),
+        label = placeLowZoom$name_en,
+        labelOptions = labelOptions(
+          noHide = TRUE,
+          textOnly = TRUE,
+          direction = 'top',
+          offset = list(0, 10),
+          style = list(
+            "text-shadow" = "-1px -1px 2px white, 1px -1px 2px white, -1px 1px 2px white, 1px 1px 2px white",
+            "font-size" = "8px"
+          )
+        )
+      ) %>%
+      hideGroup("placeLowZoomLabels") %>%
+      addLabelOnlyMarkers(
+        data = placeHighZoom,
+        group = 'placeHighZoomLabels',
+        options = pathOptions(pane = "placeHighZoomLabels_pane"),
+        label = placeHighZoom$name_en,
+        labelOptions = labelOptions(
+          noHide = TRUE,
+          textOnly = TRUE,
+          direction = 'top',
+          offset = list(0, 10),
+          style = list(
+            "text-shadow" = "-1px -1px 2px white, 1px -1px 2px white, -1px 1px 2px white, 1px 1px 2px white",
+            "font-size" = "8px"
+          )
+        )
+      ) %>%
+      hideGroup("placeHighZoomLabels") %>%
+      
+      #--------------
+      #Feature layers
+      #--------------
+    
       addPolygons(
         layerId = c(1: nrow(geology)),
         data = geology,
         group = 'geology',
         weight = 1,
-        color = "darkred",
+        color = "tomato",
         fill = TRUE,
         opacity = 0.5,
         label = lapply(geology$rocktype_p , HTML)
@@ -160,41 +490,6 @@ twServer <- function(input, output, session) {
         label = lapply(sparrow$hu8_catchment, HTML)
       ) %>%
       hideGroup("sparrow") %>%
-      addPolygons(
-        data = owbQuaternary, group = 'owbQuaternary', weight = 1, color = "#191970", fill = FALSE, opacity = 1
-      ) %>%
-      hideGroup("owbQuaternary") %>%
-      addPolygons(
-        data = owbTertiary, group = 'owbTertiary', weight = 2, color = "#0047AB", fill = FALSE, opacity = 1
-      ) %>%
-      hideGroup("owbTertiary") %>%
-      addPolygons(
-        data = censusSubdivision, group = 'censusSubdivision', weight = 1, color = "#A9A9A9", fill = FALSE, opacity = 1
-      ) %>%
-      hideGroup("censusSubdivision") %>%
-      addPolygons(
-        data = censusDivision, group = 'censusDivision', weight = 2, color = "#D3D3D3", fill = FALSE, opacity = 1
-      ) %>%
-      hideGroup("censusDivision") %>%
-      addPolygons(
-        data = watershedBounds, group = 'watershedBounds', weight = 2, color = "black", fill = FALSE, opacity = 1
-      ) %>%
-      # addAwesomeMarkers(
-      #   data = glbindStation, group = 'glbindStation', icon=awesomeIcons(
-      #     icon = 'ios-close',
-      #     iconColor = '#EE4B2B',
-      #     library = 'ion',
-      #     markerColor = 'darkred'
-      #   )
-      # ) %>%
-      # addAwesomeMarkers(
-      #   data = hydatStation, group = 'hydatStation', icon=awesomeIcons(
-      #     icon = 'ios-close',
-      #     iconColor = '#FFC0CB',
-      #     library = 'ion',
-      #     markerColor = 'darkpurple'
-      #   )
-      # ) %>%
       addCircleMarkers(
         layerId = glbindStation$station,
         data = glbindStation,
@@ -205,6 +500,7 @@ twServer <- function(input, output, session) {
         fillOpacity = 0.5,
         label = lapply(glbindStation$station, HTML)
       ) %>%
+      hideGroup("glbindStation") %>%
       addCircleMarkers(
         layerId = hydatStation$station_name,
         data = hydatStation,
@@ -215,6 +511,7 @@ twServer <- function(input, output, session) {
         fillOpacity = 0.5,
         label = lapply(hydatStation$station_name, HTML)
       ) %>%
+      hideGroup("hydatStation") %>%
       addCircleMarkers(
         layerId = upperThamesStations$station_no,
         data = upperThamesStations,
@@ -225,184 +522,23 @@ twServer <- function(input, output, session) {
         fillOpacity = 0.5,
         label = lapply(upperThamesStations$station_no, HTML)
       ) %>%
-      addCircleMarkers(
-        data = placeLowZoom,
-        group = 'placeLowZoom',
-        color = 'black',
-        stroke = FALSE,
-        radius = 3,
-        fillOpacity = 1
-       ) %>%
-      hideGroup("placeLowZoom") %>%
-      addCircleMarkers(
-        data = placeHighZoom,
-        group = 'placeHighZoom',
-        color = 'black',
-        stroke = FALSE,
-        radius = 3,
-        fillOpacity = 1
-      ) %>%
-      hideGroup("placeHighZoom") %>%
-      addLabelOnlyMarkers(
-        data = st_point_on_surface(owbQuaternary),
-        group = 'owbQuaternaryLabels',
-        label = owbQuaternary$watershed_name,
-        labelOptions = labelOptions(
-          noHide = TRUE,
-          textOnly = TRUE,
-          style = list(
-            "color" = "#191970",
-            "text-shadow" = "-1px -1px 2px white, 1px -1px 2px white, -1px 1px 2px white, 1px 1px 2px white",
-            "font-size" = "8px"
-          )
-        )
-      ) %>%
-      hideGroup("owbQuaternaryLabels") %>%
-      addLabelOnlyMarkers(
-        data = st_point_on_surface(owbTertiary),
-        group = 'owbTertiaryLabels',
-        label = owbTertiary$watershed_name,
-        labelOptions = labelOptions(
-          noHide = TRUE,
-          textOnly = TRUE,
-          style = list(
-            "color" = "#0047AB",
-            "text-shadow" = "-1px -1px 2px white, 1px -1px 2px white, -1px 1px 2px white, 1px 1px 2px white",
-            "font-size" = "8px"
-          )
-        )
-      ) %>%
-      hideGroup("owbTertiaryLabels") %>%
-      addLabelOnlyMarkers(
-        data = st_point_on_surface(censusSubdivision),
-        group = 'censusSubdivisionLabels',
-        label = censusSubdivision$name,
-        labelOptions = labelOptions(
-          noHide = TRUE,
-          textOnly = TRUE,
-          style = list(
-            "color" = "#A9A9A9",
-            "text-shadow" = "-1px -1px 2px white, 1px -1px 2px white, -1px 1px 2px white, 1px 1px 2px white",
-            "font-size" = "8px"
-          )
-        )
-      ) %>%
-      hideGroup("censusSubdivisionLabels") %>%
-      addLabelOnlyMarkers(
-        data = st_point_on_surface(censusDivision),
-        group = 'censusDivisionLabels',
-        label = censusDivision$name,
-        labelOptions = labelOptions(
-          noHide = TRUE,
-          textOnly = TRUE,
-          style = list(
-            "color" = "#D3D3D3",
-            "text-shadow" = "-1px -1px 2px white, 1px -1px 2px white, -1px 1px 2px white, 1px 1px 2px white",
-            "font-size" = "8px"
-          )
-        )
-      ) %>%
-      hideGroup("censusDivisionLabels") %>%
-      addLabelOnlyMarkers(
-        data = placeLowZoom,
-        group = 'placeLowZoomLabels',
-        label = placeLowZoom$name_en,
-        labelOptions = labelOptions(
-          noHide = TRUE,
-          textOnly = TRUE,
-          direction = 'top',
-          offset = list(0, 10),
-          style = list(
-            "text-shadow" = "-1px -1px 2px white, 1px -1px 2px white, -1px 1px 2px white, 1px 1px 2px white",
-            "font-size" = "8px"
-          )
-        )
-      ) %>%
-      hideGroup("placeLowZoomLabels") %>%
-      addLabelOnlyMarkers(
-        data = placeHighZoom,
-        group = 'placeHighZoomLabels',
-        label = placeHighZoom$name_en,
-        labelOptions = labelOptions(
-          noHide = TRUE,
-          textOnly = TRUE,
-          direction = 'top',
-          offset = list(0, 10),
-          style = list(
-            "text-shadow" = "-1px -1px 2px white, 1px -1px 2px white, -1px 1px 2px white, 1px 1px 2px white",
-            "font-size" = "8px"
-          )
-        )
-      ) %>%
-      hideGroup("placeHighZoomLabels") %>%
-      addLayersControl(
-        position = "bottomleft",
-        baseGroups = c('Cartographic', 'Terrain', 'Landcover'),
-        options = layersControlOptions(collapsed = FALSE, autoZIndex = TRUE)
-      ) %>%
-      addControl(
-        div(
-          class="leaflet-control-layers leaflet-control-layers-expanded leaflet-control",
-          checkboxGroupInput(
-            ns('featureLayers'),
-            'Feature Layers',
-            selected = c(
-              'hydatStation',
-              'glbindStation',
-              'upperThamesStation'
-            ),
-            choiceNames = c(
-              'HYDAT Flow and Level Stations',
-              'GLBIND Nutrient Stations',
-              'Upper Thames Water Temperature Stations',
-              'SPARROW Nutrient Catchments',
-              'Soil Complex',
-              'Bedrock Geology'
-            ),
-            choiceValues = c(
-              'hydatStation',
-              'glbindStation',
-              'upperThamesStation',
-              'sparrow',
-              'soil',
-              'geology'
-            )
-          ),
-          br(),
-          checkboxGroupInput(
-            ns('contextualLayers'),
-            'Contextual Layers',
-            choiceNames = c(
-              'Places',
-              'Census Divisions',
-              'Census Subdivisions',
-              'Tertiary Watersheds',
-              'Quaternary Watersheds'
-            ),
-            choiceValues = c(
-              'place',
-              'censusDivision',
-              'censusSubdivision',
-              'owbTertiary',
-              'owbQuaternary'
-            )
-          ),
-          br(),
-          checkboxInput(
-            ns('labels'),
-            'Labels',
-            FALSE
-          # ),
-          # radioButtons(
-          #   ns('style'),
-          #   'Basemap',
-          #   choiceNames = c('Cartographic', 'Terrain', 'Landcover'),
-          #   choiceValues = c('cartographic', 'terrain', 'land-cover')
-          )
-        ),
-        position="topright"
-      )
+      hideGroup("upperThamesStation") 
   })
+  
+  #Make-shift loading screen - horrible solution, but fix later
+  observe({
+    input$thamesMap_zoom
+    shinyjs::hideElement(id = ns("loading"), asis=TRUE)
+  })
+
+  #Base layer - update
+  observe({
+    leafletProxy("thamesMap") %>%
+      hideGroup("Cartographic") %>%
+      hideGroup("Terrain") %>%
+      hideGroup("Landcover") %>%
+      showGroup(input$baseSel)
+  })   
 
   # Set vector layers.
   observe({
@@ -419,6 +555,7 @@ twServer <- function(input, output, session) {
       'owbTertiary',
       'censusSubdivision',
       'censusDivision',
+      'watershedBounds',
       'upperThamesStation',
       'glbindStation',
       'hydatStation'
@@ -438,11 +575,6 @@ twServer <- function(input, output, session) {
         }
       }
     }
-
-    # Reset watershed layer to set correct layer rendering order.
-    lyr <- 'watershedBounds'
-    proxy %>% hideGroup(lyr)
-    proxy %>% showGroup(lyr)
 
     # Add places on top.
     if (z < 12) {
@@ -485,24 +617,16 @@ twServer <- function(input, output, session) {
     }
   })
 
-  # Set basemap tiles.
-  # observeEvent(input$style, {
-  #   style <- req(input$style)
-  #   leafletProxy(ns("thamesMap")) %>%
-  #     clearTiles() %>%
-  #     addTiles(
-  #       paste0(styleURL, style, '/{z}/{x}/{y}.png')
-  #     )
-  # })
-
   # Set legends.
   observe({
     lyrs <- req(input$thamesMap_groups)
     proxy <- leafletProxy(ns("thamesMap"))
-
+    
     # Add basemap.
+    colors <- NULL
+    labels <- NULL
     if ('Cartographic' %in% lyrs) {
-      title <- 'Land Use'
+      title <- 'Land use'
       colors = c(
         rgb(71, 222, 224, 255, maxColorValue = 255),
         rgb(126, 167, 220, 255, maxColorValue = 255),
@@ -529,7 +653,9 @@ twServer <- function(input, output, session) {
         "Railway",
         "Other"
       )
-    } else if ('Terrain' %in% lyrs) {
+    } 
+    
+    if ('Terrain' %in% lyrs) {
       title <- 'Elevation (m)'
       colors <- rev(c(
         rgb(2, 124, 30, 255, maxColorValue = 255),
@@ -546,81 +672,103 @@ twServer <- function(input, output, session) {
         rgb(226, 226, 226, 255, maxColorValue = 255)
       ))
       labels <- c("421 m", "", "", "", "", "", "", "", "", "", "", "172 m")
-    } else {
-      title <- 'Land Class'
+    } 
+    
+    if ('Landcover' %in% lyrs) {
+      title <- 'Land class'
       colors <-  as.vector(raster_layers[['land_cover']][['legend']])
       labels <- names(raster_layers[['land_cover']][['legend']])
-    }
+    } 
+    
     proxy %>%
-      addLegend(
-        "bottomleft",
-        layerId = "basemap",
-        title = title,
-        colors = colors,
-        labels = labels
-      )
-
-    # Add other layers, see: https://stackoverflow.com/questions/52812238/custom-legend-with-r-leaflet-circles-and-squares-in-same-plot-legends
-    colors <- c("#FAFAFA; width:10px; height:10px; margin-top: 4px; border:2px solid black; border-radius:0%;")
-    labels <- c("Thames River Watershed")
-    if ('hydatStation' %in% lyrs) {
-      colors <- c(colors, "yellow; width:10px; height:10px; margin-top: 4px; border:2px solid gold; border-radius:50%;")
-      labels <- c(labels, 'HYDAT Flow and Level Stations')
+      removeControl(layerId = "basemap")
+    if(!is.null(colors)){
+      proxy %>%
+        addLegend(
+          "topright",
+          layerId = "basemap",
+          title = paste(strong("Base layer"), tags$br(), tags$br(), title),
+          colors = colors,
+          labels = labels
+        )
     }
-    if ('glbindStation' %in% lyrs) {
-      colors <- c(colors, "red; width:10px; height:10px; margin-top: 4px; border:2px solid firebrick; border-radius:50%;")
-      labels <- c(labels, 'GLBIND Nutrient Stations')
-    }
-    if ('upperThamesStation' %in% lyrs) {
-      colors <- c(colors, "#d6b4fc; width:10px; height:10px; margin-top: 4px; border:2px solid violet; border-radius:50%;")
-      labels <- c(labels, 'Upper Thames Water Temperature Stations')
-    }
-    if ('sparrow' %in% lyrs) {
-      colors <- c(colors, "violet; width:10px; height:10px; margin-top: 4px; border:1px solid purple; border-radius:0%;")
-      labels <- c(labels, 'SPARROW Nutrient Catchments')
-    }
-    if ('soil' %in% lyrs) {
-      colors <- c(colors, "#C4A484; width:10px; height:10px; margin-top: 4px; border:1px solid brown; border-radius:0%;")
-      labels <- c(labels, 'Soil Complex')
-    }
-    if ('geology' %in% lyrs) {
-      colors <- c(colors, "#FFCCCB; width:10px; height:10px; margin-top: 4px; border:1px solid darkred; border-radius:0%;")
-      labels <- c(labels, 'Bedrock Geology')
-    }
-    if (any(c('placeHighZoom', 'placeHighZoomLabels', 'placeLowZoom', 'placeLowZoomLabels') %in% lyrs)) {
-      colors <- c(colors, "black; width:10px; height:10px; margin-top: 4px; border:1px solid black; border-radius:50%;")
-      labels <- c(labels, 'Places')
-    }
-    if ('censusDivision' %in% lyrs) {
-      colors <- c(colors, "#FAFAFA; width:10px; height:10px; margin-top: 4px; border:2px solid #D3D3D3; border-radius:0%;")
-      labels <- c(labels, 'Census Divisions')
-    }
-    if ('censusSubdivision' %in% lyrs) {
-      colors <- c(colors, "#FAFAFA; width:10px; height:10px; margin-top: 4px; border:2px solid #A9A9A9; border-radius:0%;")
-      labels <- c(labels, 'Census Subdivisions')
-    }
-    if ('owbTertiary' %in% lyrs) {
-      colors <- c(colors, "#FAFAFA; width:10px; height:10px; margin-top: 4px; border:2px solid #0047AB; border-radius:0%;")
-      labels <- c(labels, 'Tertiary Watersheds')
-    }
-    if ('owbQuaternary' %in% lyrs) {
-      colors <- c(colors, "#FAFAFA; width:10px; height:10px; margin-top: 4px; border:2px solid #191970; border-radius:0%;")
-      labels <- c(labels, 'Quaternary Watersheds')
-    }
-    labels <- paste0(
-      "<div style='display: inline-block; height: 10px; margin-top: 4px; line-height: 10px; vertical-align: top;'>",
-      labels,
-      "</div>"
-    )
-    proxy %>%
-      addLegend(
-        "bottomright",
-        colors = colors,
-        title = "Layers",
-        layerId = "layers",
-        labels = labels,
-        opacity = 1
-      )
+    
+    # # Add other layers, see: https://stackoverflow.com/questions/52812238/custom-legend-with-r-leaflet-circles-and-squares-in-same-plot-legends
+    # #colors <- c("#FAFAFA; width:10px; height:10px; margin-top: 4px; border:2px solid black; border-radius:0%;")
+    # #labels <- c("Thames River Watershed")
+    # colors <- NULL
+    # labels <- NULL
+    # 
+    # if (any(c('placeHighZoom', 'placeHighZoomLabels', 'placeLowZoom', 'placeLowZoomLabels') %in% lyrs)) {
+    #   colors <- c(colors, "black; width:10px; height:10px; margin-top: 4px; border:1px solid black; border-radius:50%;")
+    #   labels <- c(labels, 'Places')
+    # }
+    # if ('censusSubdivision' %in% lyrs) {
+    #   colors <- c(colors, "#FAFAFA; width:10px; height:10px; margin-top: 4px; border:2px solid #A9A9A9; border-radius:0%;")
+    #   labels <- c(labels, 'Census Subdivisions')
+    # }
+    # if ('censusDivision' %in% lyrs) {
+    #   colors <- c(colors, "#FAFAFA; width:10px; height:10px; margin-top: 4px; border:2px solid #343a40; border-radius:0%;")
+    #   labels <- c(labels, 'Census Divisions')
+    # }
+    # if ('owbQuaternary' %in% lyrs) {
+    #   colors <- c(colors, "#FAFAFA; width:10px; height:10px; margin-top: 4px; border:2px solid #191970; border-radius:0%;")
+    #   labels <- c(labels, 'Quaternary Watersheds')
+    # }
+    # if ('owbTertiary' %in% lyrs) {
+    #   colors <- c(colors, "#FAFAFA; width:10px; height:10px; margin-top: 4px; border:2px solid #0047AB; border-radius:0%;")
+    #   labels <- c(labels, 'Tertiary Watersheds')
+    # }
+    # 
+    # if ('watershedBounds' %in% lyrs) {
+    #   colors <- c(colors, "#FAFAFA; width:10px; height:10px; margin-top: 4px; border:2px solid black; border-radius:0%;")
+    #   labels <- c(labels, "Watershed bounds")
+    # }
+    # 
+    # labels <- paste0(
+    #   "<div style='display: inline-block; height: 10px; margin-top: 4px; line-height: 10px; vertical-align: top;'>",
+    #   labels,
+    #   "</div>"
+    # )
+    # 
+    # proxy %>%
+    #   removeControl(layerId = "layers")
+    # if(!is.null(colors)){
+    #   proxy %>%
+    #     addLegend(
+    #       "topright",
+    #       colors = colors,
+    #       title = paste(strong("Contextual layer"), tags$br(), tags$br()),
+    #       layerId = "layers",
+    #       labels = labels,
+    #       opacity = 1
+    #     )
+    # }
+    
+    # if ('hydatStation' %in% lyrs) {
+    #   colors <- c(colors, "yellow; width:10px; height:10px; margin-top: 4px; border:2px solid gold; border-radius:50%;")
+    #   labels <- c(labels, 'HYDAT Flow and Level Stations')
+    # }
+    # if ('glbindStation' %in% lyrs) {
+    #   colors <- c(colors, "red; width:10px; height:10px; margin-top: 4px; border:2px solid firebrick; border-radius:50%;")
+    #   labels <- c(labels, 'GLBIND Nutrient Stations')
+    # }
+    # if ('upperThamesStation' %in% lyrs) {
+    #   colors <- c(colors, "#d6b4fc; width:10px; height:10px; margin-top: 4px; border:2px solid violet; border-radius:50%;")
+    #   labels <- c(labels, 'Upper Thames Water Temperature Stations')
+    # }
+    # if ('sparrow' %in% lyrs) {
+    #   colors <- c(colors, "violet; width:10px; height:10px; margin-top: 4px; border:1px solid purple; border-radius:0%;")
+    #   labels <- c(labels, 'SPARROW Nutrient Catchments')
+    # }
+    # if ('soil' %in% lyrs) {
+    #   colors <- c(colors, "#C4A484; width:10px; height:10px; margin-top: 4px; border:1px solid brown; border-radius:0%;")
+    #   labels <- c(labels, 'Soil Complex')
+    # }
+    # if ('geology' %in% lyrs) {
+    #   colors <- c(colors, "#FFCCCB; width:10px; height:10px; margin-top: 4px; border:1px solid darkred; border-radius:0%;")
+    #   labels <- c(labels, 'Bedrock Geology')
+    # }
   })
 
   # Add map feature click events for modal tables.

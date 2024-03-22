@@ -70,7 +70,6 @@ body<-dashboardBody(
   #---------------
   useShinyjs(),
   
-  
   #----------------------
   #Read styling items
   #----------------------

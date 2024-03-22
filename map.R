@@ -59,7 +59,7 @@ mapUI <- function(id) {
       status = NULL,
       type = "tabs",
       tabPanel(
-        title = icon("map"),
+        title = icon("location-dot"),
         fluidRow(
           column(
             1,
@@ -136,7 +136,7 @@ mapUI <- function(id) {
           ),
           column(
              11,
-             mapboxerOutput(ns('map'), height=450)
+             mapboxerOutput(ns('map'), height="68vh")
           )
         )
       ),

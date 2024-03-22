@@ -41,9 +41,11 @@ button, .btn, .card-title, .card-tabs, .card-body, .form-control,  select, .irs-
 
 /*Thames river watershed*/
 #tw-thamesMap {
-  height: calc(100vh - 165px)!important;
+  height: calc(68vh - 0px)!important;
   padding-top: 0px;
   padding-right: 0px;
   padding-bottom: 0px;
   padding-left: 0px;
+  background: #fafaf8;
 }
+

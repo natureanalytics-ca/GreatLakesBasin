@@ -1,0 +1,23 @@
+{
+  "version": 8,
+  "name": "Land Cover",
+  "metadata": {"maputnik:renderer": "mbgljs"},
+  "sources": {
+    "thames-watershed-land-cover": {
+      "type": "raster",
+      "tiles": ["https://mappingon.ca/data2/thames-watershed-land-cover/{z}/{x}/{y}.pbf"]
+    }
+  },
+  "sprite": "",
+  "glyphs": "https://orangemug.github.io/font-glyphs/glyphs/{fontstack}/{range}.pbf",
+  "layers": [
+    {
+      "id": "thames-watershed-land-cover",
+      "type": "raster",
+      "source": "thames-watershed-land-cover",
+      "minzoom": 7,
+      "maxzoom": 14,
+      "paint": {"raster-opacity": 1}
+    }
+  ]
+}

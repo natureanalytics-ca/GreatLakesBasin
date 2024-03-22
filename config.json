@@ -1,0 +1,87 @@
+{
+  "options": {
+    "paths": {
+      "root": "/usr/src/app/node_modules/tileserver-gl-styles",
+      "fonts": "fonts",
+      "styles": "styles",
+      "mbtiles": "/data",
+      "pmtiles": "/data"
+    }
+  },
+  "styles": {
+    "terrain": {
+      "style": "/data/styles/terrain.json"
+    },
+    "land-cover": {
+      "style": "/data/styles/land-cover.json"
+    },
+    "cartographic": {
+      "style": "/data/styles/cartographic.json"
+    }
+  },
+  "data": {
+    "agriculture": {
+      "mbtiles": "agriculture.mbtiles"
+    },
+    "bathymetry": {
+      "mbtiles": "bathymetry.mbtiles"
+    },
+    "bathymetry_contour": {
+      "mbtiles": "bathymetry_contour.mbtiles"
+    },
+    "boundary": {
+      "mbtiles": "boundary.mbtiles"
+    },
+    "ca_watershed": {
+      "mbtiles": "ca_watershed.mbtiles"
+    },
+    "elev": {
+      "mbtiles": "elev.mbtiles"
+    },
+    "geology": {
+      "mbtiles": "geology.mbtiles"
+    },
+    "hillshade": {
+      "mbtiles": "hillshade.mbtiles"
+    },
+    "land_cover": {
+      "mbtiles": "land_cover.mbtiles"
+    },
+    "nutrient": {
+      "mbtiles": "nutrient.mbtiles"
+    },
+    "slope": {
+      "mbtiles": "slope.mbtiles"
+    },
+    "waterbody": {
+      "mbtiles": "waterbody.mbtiles"
+    },
+    "watercourse": {
+      "mbtiles": "watercourse.mbtiles"
+    },
+    "watershed": {
+      "mbtiles": "watershed.mbtiles"
+    },
+    "wetland": {
+      "mbtiles": "wetland.mbtiles"
+    },
+    "thames_watershed_cartographic": {
+      "mbtiles": "thames_watershed_cartographic.mbtiles"
+    },
+    "thames_watershed_contextual": {
+      "mbtiles": "thames_watershed_contextual.mbtiles"
+    },
+    "thames-watershed-elev": {
+      "mbtiles": "thames-watershed-elev.mbtiles"
+    },
+    "thames-watershed-hillshade": {
+      "mbtiles": "thames-watershed-hillshade.mbtiles"
+    },
+    "thames-watershed-land-cover": {
+      "mbtiles": "thames-watershed-land-cover.mbtiles"
+    },
+    "thames_watershed_feature": {
+      "mbtiles": "thames_watershed_feature.mbtiles"
+    }
+  }
+}

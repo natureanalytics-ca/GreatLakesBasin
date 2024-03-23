@@ -41,8 +41,8 @@ mapUI <- function(id) {
             size = "md",
             div(
               style = "width: 500px; padding: 20px;",
-              h6("Visualization tool"),
-              tags$small("Test.")
+              h6("Great Lakes visualization tool"),
+              tags$small("Prototype for gathering, processing, and simple visualization of spatial data for Laurentian Great Lakes.")
             )
           )
           
@@ -86,11 +86,11 @@ mapUI <- function(id) {
                   status = "default",
                   size = "lg",
                   width = "400px",
-                  icon = icon("layer-group"),
-                  tooltip = tooltipOptions(title = "Vector layers"),
+                  icon = icon("road"),
+                  tooltip = tooltipOptions(title = "Contextual layers"),
                   pickerInput(
                     ns('vectorSel'),
-                    label = 'Vector layers',
+                    label = 'Contextual layers (select up to 2)',
                     multiple = TRUE,
                     choices = setNames(
                       names(vector_layers),
@@ -98,7 +98,7 @@ mapUI <- function(id) {
                     ),
                     options = pickerOptions(
                       dropdownAlignRight = 'auto',
-                      maxOptions = 3,
+                      maxOptions = 2,
                       maxOptionsText = "Select up to 3",
                       style = 'color: #343a40;'
                     )
@@ -115,11 +115,11 @@ mapUI <- function(id) {
                   status = "default",
                   size = "lg",
                   width = "400px",
-                  icon = icon("table-cells-large"),
-                  tooltip = tooltipOptions(title = "Raster layers"),
+                  icon = icon("map"),
+                  tooltip = tooltipOptions(title = "Base layers"),
                   pickerInput(
                     ns('rasterSel'),
-                    'Raster layers',
+                    'Base layers (select one)',
                     multiple = TRUE,
                     choices = setNames(
                       c(names(raster_layers)),
@@ -141,7 +141,84 @@ mapUI <- function(id) {
         )
       ),
       tabPanel(
-        title = icon("circle-info")
+        title = icon("circle-info"),
+        ###
+        h4("Contextual layers"),
+        h6("Conservation Authority Watersheds"),
+        h6("Conservation Authority Watersheds: TKN"),
+        h6("OWB Primary Watersheds"),
+        tags$ul(
+          tags$li(tags$a("Ontario Watershed Boundaries (OWB)", href="https://geohub.lio.gov.on.ca/maps/mnrf::ontario-watershed-boundaries-owb/about", target="_blank"))
+        ),
+        h6("OWB Secondary Watersheds"),
+        tags$ul(
+          tags$li(tags$a("Ontario Watershed Boundaries (OWB)", href="https://geohub.lio.gov.on.ca/maps/mnrf::ontario-watershed-boundaries-owb/about", target="_blank"))
+        ),
+        h6("Tertiary watersheds"),
+        tags$ul(
+          tags$li(tags$a("Ontario Watershed Boundaries (OWB)", href="https://geohub.lio.gov.on.ca/maps/mnrf::ontario-watershed-boundaries-owb/about", target="_blank"))
+        ),
+        h6("Quaternary watersheds"),
+        tags$ul(
+          tags$li(tags$a("Ontario Watershed Boundaries (OWB)", href="https://geohub.lio.gov.on.ca/maps/mnrf::ontario-watershed-boundaries-owb/about", target="_blank"))
+        ),
+        h6("Admin 2 Boundaries"),
+        h6("ON Census Divisions"),
+        tags$ul(
+          tags$li(tags$a("Canada 2021 Census – Boundary files", href="https://www12.statcan.gc.ca/census-recensement/2021/geo/sip-pis/boundary-limites/index2021-eng.cfm?year=21", target="_blank"))
+        ),
+        h6("ON Census Consolidated Subdivisions"),
+        tags$ul(
+          tags$li(tags$a("Canada 2021 Census – Boundary files", href="https://www12.statcan.gc.ca/census-recensement/2021/geo/sip-pis/boundary-limites/index2021-eng.cfm?year=21", target="_blank"))
+        ),
+        h6("ON Census Subdivisions"),
+        tags$ul(
+          tags$li(tags$a("Canada 2021 Census – Boundary files", href="https://www12.statcan.gc.ca/census-recensement/2021/geo/sip-pis/boundary-limites/index2021-eng.cfm?year=21", target="_blank"))
+        ),
+        h6("US Counties"),
+        h6("US Census Tracts"),
+        h6("Great Lakes Basin Integrated Nutrient Dataset"),
+        h6("SPARROW Nitrogen"),
+        tags$ul(
+          tags$li(tags$a("USGS SPARROW modeling: Estimating nutrient, sediment, and dissolved solids transport ", href="https://www.usgs.gov/mission-areas/water-resources/science/sparrow-modeling-estimating-nutrient-sediment-and-dissolved", target="_blank")),
+          tags$li(tags$a("Data description (metadata)", href="https://www.sciencebase.gov/catalog/item/5bae3fe5e4b08583a5d30146", target="_blank")),
+          tags$li(tags$a("Harmful Algal Blooms in the Great Lakes", href="https://www.arcgis.com/apps/MapSeries/index.html?appid=d41a2e7273d041d2b496623aa10daa25", target="_blank"))
+        ),
+        h6("SPARROW Phosphorus"),
+        tags$ul(
+          tags$li(tags$a("USGS SPARROW modeling: Estimating nutrient, sediment, and dissolved solids transport ", href="https://www.usgs.gov/mission-areas/water-resources/science/sparrow-modeling-estimating-nutrient-sediment-and-dissolved", target="_blank")),
+          tags$li(tags$a("Data description (metadata)", href="https://www.sciencebase.gov/catalog/item/5bae3fe5e4b08583a5d30146", target="_blank")),
+          tags$li(tags$a("Harmful Algal Blooms in the Great Lakes", href="https://www.arcgis.com/apps/MapSeries/index.html?appid=d41a2e7273d041d2b496623aa10daa25", target="_blank"))
+        ),
+        h6("ON Wetlands"),
+        h6("ON Waterbodies"),
+        tags$ul(
+          tags$li(tags$a("Ontario Hydro Network (OHN)", href="https://geohub.lio.gov.on.ca/datasets/mnrf::ontario-hydro-network-ohn-waterbody/explore", target="_blank"))
+        ),
+        h6("ON Watercourses"),
+        tags$ul(
+          tags$li(tags$a("Ontario Hydro Network (OHN)", href="https://geohub.lio.gov.on.ca/datasets/mnrf::ontario-hydro-network-ohn-watercourse/explore", target="_blank"))
+        ),
+        h6("US Watercourses"),
+        h6("Bathymetry Contours"),
+        h6("ON Geology"),
+        tags$ul(
+          tags$li(tags$a("Ontario OGSEarth", href="https://www.geologyontario.mndm.gov.on.ca/ogsearth.html", target="_blank")),
+        ),
+        h6("US Geology"),
+        h6("ON Agriculture"),
+        h6("US Agriculture"),
+        br(),
+        ###
+        h4("Base layers"),
+        h6("Bathymetry"),
+        h6("Slope"),
+        h6("Elevation"),
+        h6("Terrain (Hillshade)"),
+        h6("Land Cover"),
+        tags$ul(
+          tags$li(tags$a("North American Land Cover, 2020 (Landsat, 30m)", href="http://www.cec.org/north-american-environmental-atlas/land-cover-30m-2020/", target="_blank"))
+        )
       )
     )
   )
@@ -402,6 +479,7 @@ mapServer <- function(input, output, session) {
         vector_reactive()[[sel]]$style$paint[[paste0(fillType, '-color')]][[7]]
       )
       opacity <- vector_reactive()[[sel]]$style$paint[['fill-opacity']]
+      
       tagList(
         div(
           style="display: flex; flex-direction: row; flex-wrap: wrap; justify-content: space-between; width: 100%; align-items: center;",
@@ -444,16 +522,18 @@ mapServer <- function(input, output, session) {
             4,
             div(
               style = "margin: 0px 0px; width: 100%;",
-              sliderInput(
-                inputId = ns("vecOpacity1"), 
-                label = tags$small("Opacity"), 
-                min = 0, 
-                max = 1,
-                step = 0.05,
-                value = opacity,
-                ticks = FALSE,
-                width = "100%"
-              )
+              if(!is.null(opacity)){
+                sliderInput(
+                  inputId = ns("vecOpacity1"), 
+                  label = tags$small("Opacity"), 
+                  min = 0, 
+                  max = 1,
+                  step = 0.05,
+                  value = opacity,
+                  ticks = FALSE,
+                  width = "100%"
+                )
+              }
             )
           )
         ),

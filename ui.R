@@ -38,7 +38,7 @@ sidebar <- dashboardSidebar(
         ),
         div(
           style = "position: absolute; margin-top: 10px; top: 5px; left: 100px;",
-          h1("Laurentian Great Lakes"),
+          h6("Laurentian Great Lakes"),
           tags$small(tags$em("Spatial toolkit prototype")),
         )
       )

@@ -72,7 +72,7 @@ twUI <- function(id) {
             div(
               style = "width: 500px; padding: 20px;",
               h6("Thames River Watershed"),
-              tags$small("Test.")
+              tags$small("Prototype for gathering, processing, and simple visualization of spatial data for Thames River Watershed.")
             )
           )
           
@@ -142,12 +142,12 @@ twUI <- function(id) {
                     ),
                     choicesOpt = list(
                       content = c(
-                        "<div> <i class='fas fa-circle-dot' style = 'color: gold;'></i> HYDAT Flow and Level Stations </div>",
-                        "<div> <i class='fas fa-circle-dot' style = 'color: firebrick;'></i> GLBIND Nutrient Stations </div>",
-                        "<div> <i class='fas fa-circle-dot' style = 'color: violet;'></i> Upper Thames Water Temperature Stations </div>",
+                        "<div> <i class='fas fa-circle-dot' style = 'color: gold;'></i> HYDAT flow and level stations </div>",
+                        "<div> <i class='fas fa-circle-dot' style = 'color: firebrick;'></i> GLBIND nutrient stations </div>",
+                        "<div> <i class='fas fa-circle-dot' style = 'color: violet;'></i> Upper Thames water temperature stations </div>",
                         "<div> <i class='fas fa-square-full' style = 'color: purple;'></i> SPARROW Nutrient Catchments </div>",
                         "<div> <i class='fas fa-square-full' style = 'color: brown;'></i> Soil complex </div>",
-                        "<div> <i class='fas fa-square-full' style = 'color: tomato;'></i> 'Bedrock Geology' </div>"
+                        "<div> <i class='fas fa-square-full' style = 'color: tomato;'></i> Bedrock geology </div>"
                       )
                     ),
                     options = pickerOptions(
@@ -220,7 +220,7 @@ twUI <- function(id) {
                     selected = 'Cartographic',
                     choices = setNames(
                       c('Cartographic', 'Terrain', 'Landcover'),
-                      c('Cartographic', 'Terrain', 'Landcover')
+                      c('Cartographic', 'Terrain', 'Land cover')
                      
                     ),
                     options = pickerOptions(
@@ -234,7 +234,6 @@ twUI <- function(id) {
           ),
           column(
             11,
-            
             leafletOutput(ns('thamesMap')),
             shinyjs::hidden(
               div(
@@ -252,10 +251,65 @@ twUI <- function(id) {
         )
       ),
       tabPanel(
-        title = icon("circle-info")
-      ),
-      tabPanel(
-        title = icon("chart-simple")
+        title = icon("circle-info"),
+        ###
+        h4("Data layers"),
+        h6("HYDAT flow and level stations"),
+        tags$ul(
+          tags$li(tags$a("National Water Data Archive: HYDAT", href="https://www.canada.ca/en/environment-climate-change/services/water-overview/quantity/monitoring/survey/data-products-services/national-archive-hydat.html", target="_blank")),
+          tags$li(tags$a("Data description (metadata)", href="https://collaboration.cmc.ec.gc.ca/cmc/hydrometrics/www/HYDAT_Definition_EN.pdf", target="_blank"))
+        ),
+        h6("GLBIND nutrient stations"),
+        h6("Upper Thames water temperature stations"),
+        h6("SPARROW nutrient catchments"),
+        tags$ul(
+          tags$li(tags$a("USGS SPARROW modeling: Estimating nutrient, sediment, and dissolved solids transport ", href="https://www.usgs.gov/mission-areas/water-resources/science/sparrow-modeling-estimating-nutrient-sediment-and-dissolved", target="_blank")),
+          tags$li(tags$a("Data description (metadata)", href="https://www.sciencebase.gov/catalog/item/5bae3fe5e4b08583a5d30146", target="_blank")),
+          tags$li(tags$a("Harmful Algal Blooms in the Great Lakes", href="https://www.arcgis.com/apps/MapSeries/index.html?appid=d41a2e7273d041d2b496623aa10daa25", target="_blank"))
+        ),
+        h6("Soil complex"),
+        tags$ul(
+          tags$li(tags$a("Ontario Soil Survey Complex", href="https://geohub.lio.gov.on.ca/datasets/ontarioca11::soil-survey-complex/about", target="_blank")),
+          tags$li(tags$a("Data description (metadata)", href="https://www.publicdocs.mnr.gov.on.ca/mirb/Soil%20Survey%20Complex%20-%20Data%20Description.pdf", target="_blank"))
+        ),
+        h6("Bedrock geology"),
+        tags$ul(
+          tags$li(tags$a("Ontario OGSEarth", href="https://www.geologyontario.mndm.gov.on.ca/ogsearth.html", target="_blank")),
+        ),
+        br(),
+        ###
+        h4("Contextual layers"),
+        h6("Places"),
+        h6("Census subdivisions"),
+        tags$ul(
+          tags$li(tags$a("Canada 2021 Census – Boundary files", href="https://www12.statcan.gc.ca/census-recensement/2021/geo/sip-pis/boundary-limites/index2021-eng.cfm?year=21", target="_blank"))
+        ),
+        h6("Census divisions"),
+        tags$ul(
+          tags$li(tags$a("Canada 2021 Census – Boundary files", href="https://www12.statcan.gc.ca/census-recensement/2021/geo/sip-pis/boundary-limites/index2021-eng.cfm?year=21", target="_blank"))
+        ),
+        h6("Quaternary watersheds"),
+        tags$ul(
+          tags$li(tags$a("Ontario Watershed Boundaries (OWB)", href="https://geohub.lio.gov.on.ca/maps/mnrf::ontario-watershed-boundaries-owb/about", target="_blank"))
+        ),
+        h6("Tertiary watersheds"),
+        tags$ul(
+          tags$li(tags$a("Ontario Watershed Boundaries (OWB)", href="https://geohub.lio.gov.on.ca/maps/mnrf::ontario-watershed-boundaries-owb/about", target="_blank"))
+        ),
+        h6("Watershed bounds"),
+        tags$ul(
+          tags$li("Tertiary watersheds of the Thames River (combined Lower Thames and Upper Thames)"),
+          tags$li(tags$a("Ontario Watershed Boundaries (OWB)", href="https://geohub.lio.gov.on.ca/maps/mnrf::ontario-watershed-boundaries-owb/about", target="_blank"))
+        ),
+        br(),
+        ###
+        h4("Base layers"),
+        h6("Cartographic"),
+        h6("Terrain"),
+        h6("Landcover"),
+        tags$ul(
+          tags$li(tags$a("North American Land Cover, 2020 (Landsat, 30m)", href="http://www.cec.org/north-american-environmental-atlas/land-cover-30m-2020/", target="_blank"))
+        )
       )
     )
   )
@@ -498,11 +552,11 @@ twServer <- function(input, output, session) {
         radius = 5,
         opacity = 0.8,
         fillOpacity = 0.5,
-        label = lapply(glbindStation$station, HTML)
+        label = lapply(glbindStation$location, HTML)
       ) %>%
       hideGroup("glbindStation") %>%
       addCircleMarkers(
-        layerId = hydatStation$station_name,
+        layerId = hydatStation$station_number,
         data = hydatStation,
         group = 'hydatStation',
         color = 'gold',
@@ -520,7 +574,7 @@ twServer <- function(input, output, session) {
         radius = 5,
         opacity = 0.8,
         fillOpacity = 0.5,
-        label = lapply(upperThamesStations$station_no, HTML)
+        label = lapply(upperThamesStations$station_name, HTML)
       ) %>%
       hideGroup("upperThamesStation") 
   })
@@ -685,7 +739,7 @@ twServer <- function(input, output, session) {
     if(!is.null(colors)){
       proxy %>%
         addLegend(
-          "topright",
+          "bottomright",
           layerId = "basemap",
           title = paste(strong("Base layer"), tags$br(), tags$br(), title),
           colors = colors,
@@ -773,6 +827,7 @@ twServer <- function(input, output, session) {
 
   # Add map feature click events for modal tables.
   observeEvent(input$thamesMap_marker_click, {
+    print(input$thamesMap_marker_click)
     id <- input$thamesMap_marker_click$id[[1]]
     group <- input$thamesMap_marker_click$group[[1]]
     if (group %in% c('hydatStation', 'glbindStation', 'upperThamesStation')) {
@@ -780,15 +835,56 @@ twServer <- function(input, output, session) {
         output$temperatureTbl <- DT::renderDataTable({
           datatable(
             upperThamesTemperature[upperThamesTemperature$station_no == id, names(upperThamesTemperature)[names(upperThamesTemperature) != 'station_no']],
-            rownames = FALSE
+            rownames = FALSE,
+            options = list(pageLength = 5, lengthMenu = c(5, 10, 25, 50))
           )
         })
+        output$temperaturePlot <- renderPlot({
+          dt <- data.frame(upperThamesTemperature[upperThamesTemperature$station_no == id, ])
+          dt <- cbind(day = as.Date(dt$timestamp), dt)
+          dt <- dt %>%
+            group_by(day) %>%
+            summarize(mean = mean(value), n = n())
+          
+          ggplot(data = dt, aes(x = day, y = mean)) +
+            geom_line(color="#ffc500", linetype="solid",  size=1.5, lineend = "round") +
+            labs(
+              x = "Date",
+              y = "Daily mean temperature (deg. C)"
+            ) + 
+            theme(
+              panel.background = element_rect(fill='transparent'), #transparent panel bg
+              plot.background = element_rect(fill='transparent', color=NA), #transparent plot bg
+              panel.grid.major = element_blank(), #remove major gridlines
+              panel.grid.minor = element_blank(), #remove minor gridlines
+              axis.line = element_line(colour = "black"),
+              strip.text.x = element_text(size=10),
+              strip.text.y = element_text(size=10, vjust = 1),
+              axis.text.x = element_text( size = 10),
+              axis.text.y = element_text( size = 10),
+              axis.title.x = element_text(size=10),
+              axis.title.y = element_text(size=10),
+              plot.title = element_text(size=10, face = "bold")
+            ) +
+            scale_x_date(date_labels =  "%b %Y")
+        }, res= 96, bg='transparent')
+        
         showModal(
           modalDialog(
             title = id,
-            br(),
-            p('Daily Temperature'),
-            DT::dataTableOutput(ns("temperatureTbl")),
+            tabBox(
+              title = strong('Daily water temperature'),
+              width = 12,
+              collapsible = FALSE,
+              tabPanel(
+                title = icon("chart-line"),
+                plotOutput(ns("temperaturePlot"))
+              ),
+              tabPanel(
+                title = icon("database"),
+                DT::dataTableOutput(ns("temperatureTbl"))
+              )
+            ),
             size = "l",
             easyClose = TRUE,
             footer = NULL
@@ -798,24 +894,100 @@ twServer <- function(input, output, session) {
         output$hydatFlowTbl <- DT::renderDataTable({
           datatable(
             hydatFlow[hydatFlow$station_number == id, names(hydatFlow)[names(hydatFlow) != 'station_number']],
-            rownames = FALSE
+            rownames = FALSE,
+            options = list(pageLength = 5, lengthMenu = c(5, 10, 25, 50))
           )
         })
         output$hydatLevelTbl <- DT::renderDataTable({
           datatable(
             hydatLevel[hydatLevel$station_number == id, names(hydatLevel)[names(hydatLevel) != 'station_number']],
-            rownames = FALSE
+            rownames = FALSE,
+            options = list(pageLength = 5, lengthMenu = c(5, 10, 25, 50))
           )
         })
+        
+        output$hydatFlowPlot <- renderPlot({
+          dt <- data.frame(hydatFlow[hydatFlow$station_number == id, names(hydatFlow)[names(hydatFlow) != 'station_number']])
+          dt <- dt %>%
+            mutate(day = as.Date(lubridate::make_datetime(year, month))) 
+          
+          ggplot(dt, aes(x = day, y = monthly_mean)) +
+            #geom_line(color="#ffc500", linetype="solid",  linewidth=1.5, lineend = "round") +
+            geom_bar(stat = "identity", fill = "#ffc500") +
+            labs(
+              x = "Date",
+              y = "Monthly mean of daily flows (m^3/s)"
+            ) + 
+            theme(
+              panel.background = element_rect(fill='transparent'), #transparent panel bg
+              plot.background = element_rect(fill='transparent', color=NA), #transparent plot bg
+              panel.grid.major = element_blank(), #remove major gridlines
+              panel.grid.minor = element_blank(), #remove minor gridlines
+              axis.line = element_line(colour = "black"),
+              strip.text.x = element_text(size=10),
+              strip.text.y = element_text(size=10, vjust = 1),
+              axis.text.x = element_text( size = 10),
+              axis.text.y = element_text( size = 10),
+              axis.title.x = element_text(size=10),
+              axis.title.y = element_text(size=10),
+              plot.title = element_text(size=10, face = "bold")
+            ) +
+            scale_x_date(date_labels =  "%b %Y") 
+        }, res= 96, bg='transparent')
+        
+        output$hydatLevelPlot <- renderPlot({
+          dt <- data.frame(hydatLevel[hydatLevel$station_number == id, names(hydatLevel)[names(hydatLevel) != 'station_number']])
+          dt <- dt %>%
+            mutate(day = as.Date(lubridate::make_datetime(year, month)))
+          
+          ggplot(dt, aes(x = day, y = monthly_mean)) +
+            #geom_line(color="#ffc500", linetype="solid",  linewidth=1.5, lineend = "round") +
+            geom_bar(stat = "identity", fill = "#ffc500") +
+            labs(
+              x = "Date",
+              y = "Monthly mean of daily water level (m)"
+            ) + 
+            theme(
+              panel.background = element_rect(fill='transparent'), #transparent panel bg
+              plot.background = element_rect(fill='transparent', color=NA), #transparent plot bg
+              panel.grid.major = element_blank(), #remove major gridlines
+              panel.grid.minor = element_blank(), #remove minor gridlines
+              axis.line = element_line(colour = "black"),
+              strip.text.x = element_text(size=10),
+              strip.text.y = element_text(size=10, vjust = 1),
+              axis.text.x = element_text( size = 10),
+              axis.text.y = element_text( size = 10),
+              axis.title.x = element_text(size=10),
+              axis.title.y = element_text(size=10),
+              plot.title = element_text(size=10, face = "bold")
+            ) +
+            scale_x_date(date_labels =  "%b %Y") 
+        }, res= 96, bg='transparent')
+        
         showModal(
           modalDialog(
             title = id,
-            br(),
-            p('Monthly Flow'),
-            DT::dataTableOutput(ns("hydatLevelTbl")),
-            br(),
-            p('Monthly Level'),
-            DT::dataTableOutput(ns("hydatLevelTbl")),
+            tabBox(
+              title = strong('Monthly streamflow and water level'),
+              width = 12,
+              collapsible = FALSE,
+              tabPanel(
+                title = tagList(icon("chart-line"), "Flow"),
+                plotOutput(ns("hydatFlowPlot"))
+              ),
+              tabPanel(
+                title = tagList(icon("chart-line"), "Level"),
+                plotOutput(ns("hydatLevelPlot"))
+              ),
+              tabPanel(
+                title = icon("database"),
+                strong('Monthly streamflow'),
+                DT::dataTableOutput(ns("hydatFlowTbl")),
+                br(),
+                strong('Monthly level'),
+                DT::dataTableOutput(ns("hydatLevelTbl")),
+              )
+            ),
             size = "l",
             easyClose = TRUE,
             footer = NULL
@@ -825,24 +997,104 @@ twServer <- function(input, output, session) {
         output$glbindNTbl <- DT::renderDataTable({
           datatable(
             glbindNutrients[glbindNutrients$station == id & glbindNutrients$generalized == 'N', names(glbindNutrients)[!names(glbindNutrients) %in% c('station', 'generalized')]],
-            rownames = FALSE
+            rownames = FALSE,
+            options = list(pageLength = 5, lengthMenu = c(5, 10, 25, 50))
           )
         })
         output$glbindPTbl <- DT::renderDataTable({
           datatable(
             glbindNutrients[glbindNutrients$station == id & glbindNutrients$generalized == 'P', names(glbindNutrients)[!names(glbindNutrients) %in% c('station', 'generalized')]],
-            rownames = FALSE
+            rownames = FALSE,
+            options = list(pageLength = 5, lengthMenu = c(5, 10, 25, 50))
           )
         })
+        
+        output$glbindNPlot <- renderPlot({
+          dt <- data.frame(glbindNutrients[glbindNutrients$station == id & glbindNutrients$generalized == 'N', ])
+          dt <- cbind(day = as.Date(dt$datetime), dt)
+          dt <- dt %>%
+            group_by(day) %>%
+            summarize(mean = mean(value), n = n())
+          
+          ggplot(dt, aes(x = day, y = mean)) +
+            #geom_lines(color="#ffc500", linetype="solid",  linewidth=1.5, lineend = "round") +
+            geom_bar(stat = "identity", fill = "#ffc500") +
+            labs(
+              x = "Date",
+              y = "Daily mean ammonia mg/l"
+            ) + 
+            theme(
+              panel.background = element_rect(fill='transparent'), #transparent panel bg
+              plot.background = element_rect(fill='transparent', color=NA), #transparent plot bg
+              panel.grid.major = element_blank(), #remove major gridlines
+              panel.grid.minor = element_blank(), #remove minor gridlines
+              axis.line = element_line(colour = "black"),
+              strip.text.x = element_text(size=10),
+              strip.text.y = element_text(size=10, vjust = 1),
+              axis.text.x = element_text( size = 10),
+              axis.text.y = element_text( size = 10),
+              axis.title.x = element_text(size=10),
+              axis.title.y = element_text(size=10),
+              plot.title = element_text(size=10, face = "bold")
+            ) +
+            scale_x_date(date_labels =  "%b %Y")
+        }, res= 96, bg='transparent')
+        
+        output$glbindPPlot <- renderPlot({
+          dt <- data.frame(glbindNutrients[glbindNutrients$station == id & glbindNutrients$generalized == 'P', ])
+          dt <- cbind(day = as.Date(dt$datetime), dt)
+          dt <- dt %>%
+            group_by(day) %>%
+            summarize(mean = mean(value), n = n())
+          
+          ggplot(dt, aes(x = day, y = mean)) +
+            #geom_lines(color="#ffc500", linetype="solid",  linewidth=1.5, lineend = "round") +
+            geom_bar(stat = "identity", fill = "#ffc500") +
+            labs(
+              x = "Date",
+              y = "Daily mean phosphorus soluble reactive mg/l"
+            ) + 
+            theme(
+              panel.background = element_rect(fill='transparent'), #transparent panel bg
+              plot.background = element_rect(fill='transparent', color=NA), #transparent plot bg
+              panel.grid.major = element_blank(), #remove major gridlines
+              panel.grid.minor = element_blank(), #remove minor gridlines
+              axis.line = element_line(colour = "black"),
+              strip.text.x = element_text(size=10),
+              strip.text.y = element_text(size=10, vjust = 1),
+              axis.text.x = element_text( size = 10),
+              axis.text.y = element_text( size = 10),
+              axis.title.x = element_text(size=10),
+              axis.title.y = element_text(size=10),
+              plot.title = element_text(size=10, face = "bold")
+            ) +
+            scale_x_date(date_labels =  "%b %Y")
+        }, res= 96, bg='transparent')
         showModal(
           modalDialog(
             title = id,
-            br(),
-            p('Nutrient: N'),
-            DT::dataTableOutput(ns("glbindNTbl")),
-            br(),
-            p('Nutrient: P'),
-            DT::dataTableOutput(ns("glbindPTbl")),
+            tabBox(
+              title = strong('Daily nutrient'),
+              width = 12,
+              collapsible = FALSE,
+              tabPanel(
+                title = tagList(icon("chart-line"), "N"),
+                plotOutput(ns("glbindNPlot"))
+              ),
+              tabPanel(
+                title = tagList(icon("chart-line"), "P"),
+                plotOutput(ns("glbindPPlot"))
+              ),
+              tabPanel(
+                title = icon("database"),
+                strong('Nutrient: N'),
+                DT::dataTableOutput(ns("glbindNTbl")),
+                br(),
+                strong('Nutrient: P'),
+                DT::dataTableOutput(ns("glbindPTbl")),
+              )
+            ),
+            
             size = "l",
             easyClose = TRUE,
             footer = NULL

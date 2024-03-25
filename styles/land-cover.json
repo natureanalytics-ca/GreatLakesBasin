@@ -5,7 +5,7 @@
   "sources": {
     "thames-watershed-land-cover": {
       "type": "raster",
-      "tiles": ["https://mappingon.ca/data2/thames-watershed-land-cover/{z}/{x}/{y}.pbf"]
+      "tiles": ["http://142.93.149.247/data/thames-watershed-land-cover/{z}/{x}/{y}.pbf"]
     }
   },
   "sprite": "",

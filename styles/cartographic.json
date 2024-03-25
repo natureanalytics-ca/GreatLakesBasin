@@ -8,13 +8,13 @@
     "thames-watershed-cartographic": {
       "type": "vector",
       "tiles": [
-        "https://mappingon.ca/data2/thames_watershed_cartographic/{z}/{x}/{y}.pbf"
+        "http://142.93.149.247/data/thames_watershed_cartographic/{z}/{x}/{y}.pbf"
       ]
     },
     "thames-watershed-contextual": {
       "type": "vector",
       "tiles": [
-        "https://mappingon.ca/data2/thames_watershed_contextual/{z}/{x}/{y}.pbf"
+        "http://142.93.149.247/data/thames_watershed_contextual/{z}/{x}/{y}.pbf"
       ]
     }
   },

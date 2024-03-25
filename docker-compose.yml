@@ -6,8 +6,8 @@ services:
     container_name: tile-server
     image: maptiler/tileserver-gl
     ports:
-      - "8080:8080"
+      - "80:8080"
     volumes:
       - ${HOME}/data:/data
-      - ./styles:/styles
+      - ./styles:/data/styles
       - ./config.json:/data/config.json

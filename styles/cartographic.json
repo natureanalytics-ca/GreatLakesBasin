@@ -1,0 +1,134 @@
+{
+  "version": 8,
+  "name": "Cartographic",
+  "metadata": {
+    "maputnik:renderer": "mbgljs"
+  },
+  "sources": {
+    "thames-watershed-cartographic": {
+      "type": "vector",
+      "tiles": [
+        "https://mappingon.ca/data2/thames_watershed_cartographic/{z}/{x}/{y}.pbf"
+      ]
+    },
+    "thames-watershed-contextual": {
+      "type": "vector",
+      "tiles": [
+        "https://mappingon.ca/data2/thames_watershed_contextual/{z}/{x}/{y}.pbf"
+      ]
+    }
+  },
+  "sprite": "",
+  "glyphs": "https://orangemug.github.io/font-glyphs/glyphs/{fontstack}/{range}.pbf",
+  "layers": [
+    {
+      "id": "thames_watershed_ofat_watershed_fill",
+      "type": "fill",
+      "source": "thames-watershed-contextual",
+      "source-layer": "thames_watershed_ofat_watershed",
+      "minzoom": 7,
+      "maxzoom": 14,
+      "layout": {"visibility": "visible"},
+      "paint": {"fill-color": "rgba(244, 255, 196, 1)"}
+    },
+    {
+      "id": "woodland",
+      "type": "fill",
+      "source": "thames-watershed-cartographic",
+      "source-layer": "thames_watershed_woodland",
+      "minzoom": 7,
+      "maxzoom": 14,
+      "layout": {"visibility": "visible"},
+      "paint": {
+        "fill-color": [
+          "match",
+          ["get", "description"],
+          "682: Shrubland / Arbustes",
+          "#cd9f72",
+          "685: Wetland Treed / Zone humide boisée",
+          "#adffce",
+          "687: Coniferous Forest / Forêt de conifères",
+          "#34ebb4",
+          "691: Deciduous Forest / Forêt de feuillus",
+          "#04e07a",
+          "695: Mixed Forest / Forêt mixte",
+          "#35f2a7",
+          "#ccc"
+        ]
+      }
+    },
+    {
+      "id": "wetland",
+      "type": "fill",
+      "source": "thames-watershed-cartographic",
+      "source-layer": "thames_watershed_wetland",
+      "minzoom": 7,
+      "maxzoom": 14,
+      "layout": {"visibility": "visible"},
+      "paint": {"fill-color": "rgba(71, 222, 224, 1)"}
+    },
+    {
+      "id": "watercourse",
+      "type": "line",
+      "source": "thames-watershed-cartographic",
+      "source-layer": "thames_watershed_watercourse",
+      "minzoom": 7,
+      "maxzoom": 14,
+      "layout": {"visibility": "visible"},
+      "paint": {
+        "line-color": "rgba(126, 167, 220, 1)",
+        "line-width": {"stops": [[7, 0.2], [10, 0.5], [14, 1]]}
+      }
+    },
+    {
+      "id": "waterbody",
+      "type": "fill",
+      "source": "thames-watershed-cartographic",
+      "source-layer": "thames_watershed_waterbody",
+      "minzoom": 7,
+      "maxzoom": 14,
+      "layout": {"visibility": "visible"},
+      "paint": {"fill-color": "rgba(126, 167, 220, 1)"}
+    },
+    {
+      "id": "trail",
+      "type": "line",
+      "source": "thames-watershed-cartographic",
+      "source-layer": "thames_watershed_trail",
+      "minzoom": 7,
+      "maxzoom": 14,
+      "layout": {"visibility": "visible"},
+      "paint": {
+        "line-color": "rgba(162, 162, 162, 1)",
+        "line-dasharray": [1, 1],
+        "line-width": {"stops": [[7, 0.2], [10, 0.5], [14, 1]]}
+      }
+    },
+    {
+      "id": "railway",
+      "type": "line",
+      "source": "thames-watershed-cartographic",
+      "source-layer": "thames_watershed_railway",
+      "minzoom": 7,
+      "maxzoom": 14,
+      "layout": {"visibility": "visible"},
+      "paint": {
+        "line-color": "rgba(128, 128, 128, 1)",
+        "line-width": {"stops": [[7, 0.2], [10, 0.5], [14, 1]]}
+      }
+    },
+    {
+      "id": "road",
+      "type": "line",
+      "source": "thames-watershed-cartographic",
+      "source-layer": "thames_watershed_road",
+      "minzoom": 7,
+      "maxzoom": 14,
+      "layout": {"visibility": "visible"},
+      "paint": {
+        "line-color": "rgba(177, 177, 177, 1)",
+        "line-width": {"stops": [[7, 0.2], [10, 0.5], [14, 1]]}
+      }
+    }
+  ]
+}

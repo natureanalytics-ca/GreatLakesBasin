@@ -1,0 +1,13 @@
+version: "3"
+
+services:
+  tile-server:
+    restart: always
+    container_name: tile-server
+    image: maptiler/tileserver-gl
+    ports:
+      - "8080:8080"
+    volumes:
+      - ${HOME}/data:/data
+      - ./styles:/styles
+      - ./config.json:/data/config.json

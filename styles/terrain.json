@@ -1,0 +1,35 @@
+{
+  "version": 8,
+  "name": "Terrain",
+  "metadata": {"maputnik:renderer": "mbgljs"},
+  "sources": {
+    "thames-watershed-elev": {
+      "type": "raster",
+      "tiles": ["https://mappingon.ca/data2/thames-watershed-elev/{z}/{x}/{y}.pbf"]
+    },
+    "thames-watershed-hillshade": {
+      "type": "raster",
+      "tiles": ["https://mappingon.ca/data2/thames-watershed-hillshade/{z}/{x}/{y}.pbf"]
+    }
+  },
+  "sprite": "",
+  "glyphs": "https://orangemug.github.io/font-glyphs/glyphs/{fontstack}/{range}.pbf",
+  "layers": [
+    {
+      "id": "thames-watershed-hillshade",
+      "type": "raster",
+      "source": "thames-watershed-hillshade",
+      "minzoom": 7,
+      "maxzoom": 14,
+      "paint": {"raster-opacity": 1}
+    },
+    {
+      "id": "thames-watershed-elev",
+      "type": "raster",
+      "source": "thames-watershed-elev",
+      "minzoom": 7,
+      "maxzoom": 14,
+      "paint": {"raster-opacity": 0.75}
+    }
+  ]
+}

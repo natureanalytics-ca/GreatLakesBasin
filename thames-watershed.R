@@ -260,7 +260,13 @@ twUI <- function(id) {
           tags$li(tags$a("Data description (metadata)", href="https://collaboration.cmc.ec.gc.ca/cmc/hydrometrics/www/HYDAT_Definition_EN.pdf", target="_blank"))
         ),
         h6("GLBIND nutrient stations"),
+        tags$ul(
+          tags$li(tags$a("Great Lakes Basin Integrated Nutrient Dataset (2000-2019)", href="https://open.canada.ca/data/en/dataset/8eecfdf5-4fbc-43ec-a504-7e4ee41572eb", target="_blank"))
+        ),
         h6("Upper Thames water temperature stations"),
+        tags$ul(
+          tags$li(tags$a("Collaborative Water Data Viewer", href="https://data-cwdv.ca/applications/public.html?publicuser=Public#cwdv/stationoverview", target="_blank"))
+        ),
         h6("SPARROW nutrient catchments"),
         tags$ul(
           tags$li(tags$a("USGS SPARROW modeling: Estimating nutrient, sediment, and dissolved solids transport ", href="https://www.usgs.gov/mission-areas/water-resources/science/sparrow-modeling-estimating-nutrient-sediment-and-dissolved", target="_blank")),
@@ -280,6 +286,9 @@ twUI <- function(id) {
         ###
         h4("Contextual layers"),
         h6("Places"),
+        tags$ul(
+          tags$li(tags$a("Canada 2021 Census – Boundary files", href="https://www12.statcan.gc.ca/census-recensement/2021/geo/sip-pis/boundary-limites/index2021-eng.cfm?year=21", target="_blank"))
+        ),
         h6("Census subdivisions"),
         tags$ul(
           tags$li(tags$a("Canada 2021 Census – Boundary files", href="https://www12.statcan.gc.ca/census-recensement/2021/geo/sip-pis/boundary-limites/index2021-eng.cfm?year=21", target="_blank"))
@@ -305,7 +314,13 @@ twUI <- function(id) {
         ###
         h4("Base layers"),
         h6("Cartographic"),
+        tags$ul(
+          tags$li(tags$a("Government of Canada - CanVec", href="https://open.canada.ca/data/en/dataset/8ba2aa2a-7bb9-4448-b4d7-f164409fe056", target="_blank"))
+        ),
         h6("Terrain"),
+        tags$ul(
+          tags$li(tags$a("Ontario Ministry of Natural Resources and Forestry - Provincial Digital Elevation Model", href="https://geohub.lio.gov.on.ca/maps/mnrf::provincial-digital-elevation-model-pdem/about", target="_blank"))
+        ),
         h6("Landcover"),
         tags$ul(
           tags$li(tags$a("North American Land Cover, 2020 (Landsat, 30m)", href="http://www.cec.org/north-american-environmental-atlas/land-cover-30m-2020/", target="_blank"))

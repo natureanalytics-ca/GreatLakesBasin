@@ -163,6 +163,10 @@ mapUI <- function(id) {
           tags$li(tags$a("Ontario Watershed Boundaries (OWB)", href="https://geohub.lio.gov.on.ca/maps/mnrf::ontario-watershed-boundaries-owb/about", target="_blank"))
         ),
         h6("Admin 2 Boundaries"),
+        tags$ul(
+          tags$li(tags$a("US Census Bureau – TIGER/Line Shapefiles", href="https://www.census.gov/cgi-bin/geo/shapefiles/index.php", target="_blank")),
+          tags$li(tags$a("Canada 2021 Census – Boundary files", href="https://www12.statcan.gc.ca/census-recensement/2021/geo/sip-pis/boundary-limites/index2021-eng.cfm?year=21", target="_blank"))
+        ),
         h6("ON Census Divisions"),
         tags$ul(
           tags$li(tags$a("Canada 2021 Census – Boundary files", href="https://www12.statcan.gc.ca/census-recensement/2021/geo/sip-pis/boundary-limites/index2021-eng.cfm?year=21", target="_blank"))
@@ -176,8 +180,17 @@ mapUI <- function(id) {
           tags$li(tags$a("Canada 2021 Census – Boundary files", href="https://www12.statcan.gc.ca/census-recensement/2021/geo/sip-pis/boundary-limites/index2021-eng.cfm?year=21", target="_blank"))
         ),
         h6("US Counties"),
+        tags$ul(
+          tags$li(tags$a("US Census Bureau – TIGER/Line Shapefiles", href="https://www.census.gov/cgi-bin/geo/shapefiles/index.php", target="_blank"))
+        ),
         h6("US Census Tracts"),
+        tags$ul(
+          tags$li(tags$a("US Census Bureau – TIGER/Line Shapefiles", href="https://www.census.gov/cgi-bin/geo/shapefiles/index.php", target="_blank"))
+        ),
         h6("Great Lakes Basin Integrated Nutrient Dataset"),
+        tags$ul(
+          tags$li(tags$a("Great Lakes Basin Integrated Nutrient Dataset (2000-2019)", href="https://open.canada.ca/data/en/dataset/8eecfdf5-4fbc-43ec-a504-7e4ee41572eb", target="_blank"))
+        ),
         h6("SPARROW Nitrogen"),
         tags$ul(
           tags$li(tags$a("USGS SPARROW modeling: Estimating nutrient, sediment, and dissolved solids transport ", href="https://www.usgs.gov/mission-areas/water-resources/science/sparrow-modeling-estimating-nutrient-sediment-and-dissolved", target="_blank")),
@@ -191,6 +204,9 @@ mapUI <- function(id) {
           tags$li(tags$a("Harmful Algal Blooms in the Great Lakes", href="https://www.arcgis.com/apps/MapSeries/index.html?appid=d41a2e7273d041d2b496623aa10daa25", target="_blank"))
         ),
         h6("ON Wetlands"),
+        tags$ul(
+          tags$li(tags$a("Ontario Ministry of Natural Resources and Forestry - Wetlands", href="https://geohub.lio.gov.on.ca/datasets/mnrf::wetlands/about", target="_blank"))
+        ),
         h6("ON Waterbodies"),
         tags$ul(
           tags$li(tags$a("Ontario Hydro Network (OHN)", href="https://geohub.lio.gov.on.ca/datasets/mnrf::ontario-hydro-network-ohn-waterbody/explore", target="_blank"))
@@ -199,22 +215,57 @@ mapUI <- function(id) {
         tags$ul(
           tags$li(tags$a("Ontario Hydro Network (OHN)", href="https://geohub.lio.gov.on.ca/datasets/mnrf::ontario-hydro-network-ohn-watercourse/explore", target="_blank"))
         ),
+        h6("US Wetlands"),
+        tags$ul(
+          tags$li(tags$a("US Fish & Wildlife Service - National Wetlands Inventory", href="https://www.fws.gov/program/national-wetlands-inventory/download-state-wetlands-data", target="_blank"))
+        ),
+        h6("US Waterbodies"),
+        tags$ul(
+          tags$li(tags$a("National Hydrography Database (NHD)", href="https://www.epa.gov/waterdata/nhdplus-great-lakes-data-vector-processing-unit-04", target="_blank"))
+        ),
         h6("US Watercourses"),
+        tags$ul(
+          tags$li(tags$a("National Hydrography Database (NHD)", href="https://www.epa.gov/waterdata/nhdplus-great-lakes-data-vector-processing-unit-04", target="_blank"))
+        ),
         h6("Bathymetry Contours"),
+        tags$ul(
+          tags$li(tags$a("NOAA - Great Lakes Bathymetry", href="https://www.ngdc.noaa.gov/mgg/greatlakes/", target="_blank"))
+        ),
         h6("ON Geology"),
         tags$ul(
-          tags$li(tags$a("Ontario OGSEarth", href="https://www.geologyontario.mndm.gov.on.ca/ogsearth.html", target="_blank")),
+          tags$li(tags$a("Ontario OGSEarth", href="https://www.geologyontario.mndm.gov.on.ca/ogsearth.html", target="_blank"))
         ),
         h6("US Geology"),
+        tags$ul(
+          tags$li(tags$a("USGS - Geologic maps of US states", href="https://mrdata.usgs.gov/geology/state/", target="_blank"))
+        ),
         h6("ON Agriculture"),
+        tags$ul(
+          tags$li(tags$a("Canada Agricultural Census 2021", href="https://ftp.maps.canada.ca/pub/statcan_statcan/Agriculture_Agriculture/census_of_agriculture-recensement_agriculture/2021/", target="_blank"))
+        ),
         h6("US Agriculture"),
+        tags$ul(
+          tags$li(tags$a("US Agricultural Census 2017", href="https://www.nass.usda.gov/Publications/AgCensus/2017/Online_Resources/Ag_Census_Web_Maps/Data_download/index.php", target="_blank"))
+        ),
         br(),
         ###
         h4("Base layers"),
         h6("Bathymetry"),
+        tags$ul(
+          tags$li(tags$a("NOAA - Great Lakes Bathymetry", href="https://www.ngdc.noaa.gov/mgg/greatlakes/", target="_blank"))
+        ),
         h6("Slope"),
+        tags$ul(
+          tags$li(tags$a("NASA / USGS - Shuttle Radar Topography Mission (SRTM)", href="https://www.earthdata.nasa.gov/sensors/srtm", target="_blank"))
+        ),
         h6("Elevation"),
+        tags$ul(
+          tags$li(tags$a("NASA / USGS - Shuttle Radar Topography Mission (SRTM)", href="https://www.earthdata.nasa.gov/sensors/srtm", target="_blank"))
+        ),
         h6("Terrain (Hillshade)"),
+        tags$ul(
+          tags$li(tags$a("NASA / USGS - Shuttle Radar Topography Mission (SRTM)", href="https://www.earthdata.nasa.gov/sensors/srtm", target="_blank"))
+        ),
         h6("Land Cover"),
         tags$ul(
           tags$li(tags$a("North American Land Cover, 2020 (Landsat, 30m)", href="http://www.cec.org/north-american-environmental-atlas/land-cover-30m-2020/", target="_blank"))

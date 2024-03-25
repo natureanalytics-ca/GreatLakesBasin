@@ -1,7 +1,7 @@
 # Great Lakes Basin Watersheds
 
 
-## Tile Server
+## Tile server setup
 
 Map tiles server hosted on Digital Ocean at: 142.93.149.247 with the following config:
 
@@ -12,51 +12,46 @@ Docker 25.0.3 on Ubuntu 22.04
 25 GB SSD
 ```
 
-
-## Server setup
-
-
-Setup dir:
+Update and install nginx and certbot for SSL
 ```
-ssh root@142.93.149.247
+apt update
+apt upgrade -y
+apt install nginx -y
+snap install --classic certbot
+sudo ln -s /snap/bin/certbot /usr/bin/certbot
+sudo certbot --nginx
+```
+
+Ports 80 (HTTP) and 443 (HTTPS) were opened in the digital ocean web app, and on the server as:
+
+```
+ufw allow 80
+ufw allow 443
+```
+
+Setup dirs in home dir:
+```
+git clone https://github.com/natureanalytics-ca/GreatLakesBasin.git
 
 mkdir $HOME/data
 ```
 
-mbtiles files were uploaded to $HOME/data from the data processing server as:
+mbtiles files were then uploaded to $HOME/data from the data processing server (see "Data processing" section below for how these were created) as:
 ```
 cd ${DATA_DIR}/served/mbtiles
 
-rsync -av agriculture.mbtiles root@142.93.149.247:~/data/mbtiles
-rsync -av bathymetry.mbtiles root@142.93.149.247:~/data/mbtiles
-rsync -av bathymetry_contour.mbtiles root@142.93.149.247:~/data/mbtiles
-rsync -av boundary.mbtiles root@142.93.149.247:~/data/mbtiles
-rsync -av ca_watershed.mbtiles root@142.93.149.247:~/data/mbtiles
-rsync -av elev.mbtiles root@142.93.149.247:~/data/mbtiles
-rsync -av geology.mbtiles root@142.93.149.247:~/data/mbtiles
-rsync -av hillshade.mbtiles root@142.93.149.247:~/data/mbtiles
-rsync -av land_cover.mbtiles root@142.93.149.247:~/data/mbtiles
-rsync -av nutrient.mbtiles root@142.93.149.247:~/data/mbtiles
-rsync -av wetland.mbtiles root@142.93.149.247:~/data/mbtiles
-rsync -av slope.mbtiles root@142.93.149.247:~/data/mbtiles
-rsync -av waterbody.mbtiles root@142.93.149.247:~/data/mbtiles
-rsync -av watercourse.mbtiles root@142.93.149.247:~/data/mbtiles
-rsync -av watershed.mbtiles root@142.93.149.247:~/data/mbtiles
-rsync -av wetland.mbtiles root@142.93.149.247:~/data/mbtiles
-rsync -av thames-watershed-elev.mbtiles root@142.93.149.247:~/data/mbtiles
-rsync -av thames-watershed-hillshade.mbtiles root@142.93.149.247:~/data/mbtiles
-rsync -av thames-watershed-land-cover.mbtiles root@142.93.149.247:~/data/mbtiles
-rsync -av thames_watershed_cartographic.mbtiles root@142.93.149.247:~/data/mbtiles
-rsync -av thames_watershed_contextual.mbtiles root@142.93.149.247:~/data/mbtiles
-rsync -av thames_watershed_feature.mbtiles root@142.93.149.247:~/data/mbtiles
+for i in agriculture bathymetry bathymetry_contour boundary ca_watershed elev geology hillshade land_cover nutrient wetland slope waterbody watercourse watershed wetland thames-watershed-elev thames-watershed-hillshade thames-watershed-land-cover thames_watershed_cartographic thames_watershed_contextual thames_watershed_feature 
+do
+    echo ${i}.mbtiles >> fileList.txt
+done
+
+rsync -av --files-from=fileList.txt . root@142.93.149.247:~/data
+
+rm fileList.txt
 ```
 
 Start the tile server
 ```
-ssh root@142.93.149.247
-
-git clone https://github.com/natureanalytics-ca/GreatLakesBasin.git
-
 docker pull maptiler/tileserver-gl
 
 cd GreatLakesBasin
@@ -71,7 +66,7 @@ Data was aquired and processed on an ubuntu server 22.04 LTS machine with the fo
 
 - 4 core / 8 thread cpu
 - 32 gb RAM
-- DATA_DIR & DB_DIR stored on a 2tb NVMe SSD
+- NVMe SSD storage
 
 With the following libs installed and in use here (among others):
 

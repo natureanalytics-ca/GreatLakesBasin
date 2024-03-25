@@ -1,6 +1,5 @@
-url <- 'https://mappingon.ca/data2/'
-styleURL <- 'https://mappingon.ca/styles2/'
-# url <- 'http://192.168.18.14:8081/data/'
+url <- 'http://142.93.149.247/data/'
+styleURL <- 'http://142.93.149.247/styles/'
 
 tbls <- './data'
 tknFile <- file.path(tbls, 'ca_data_ofat_watershed_tkn_ts.csv')

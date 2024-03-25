@@ -827,7 +827,6 @@ twServer <- function(input, output, session) {
 
   # Add map feature click events for modal tables.
   observeEvent(input$thamesMap_marker_click, {
-    print(input$thamesMap_marker_click)
     id <- input$thamesMap_marker_click$id[[1]]
     group <- input$thamesMap_marker_click$group[[1]]
     if (group %in% c('hydatStation', 'glbindStation', 'upperThamesStation')) {

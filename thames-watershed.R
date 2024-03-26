@@ -9,6 +9,7 @@ glbindStation <- read_sf('./data/thames_watershed_glbind_station.geojson')
 censusDivision <- read_sf('./data/thames_watershed_census_division.geojson')
 censusSubdivision <- read_sf('./data/thames_watershed_census_subdivision.geojson')
 upperThamesStations <- read_sf('./data/upper_thames_stations.geojson')
+mineralExtractionSites <- read_sf('./data/thames_watershed_canvec_extraction_site.geojson')
 geology <- read_sf('./data/thames_watershed_geology.geojson')
 sparrow <- read_sf('./data/thames_watershed_sparrow.geojson')
 soil <- read_sf('./data/thames_watershed_soil.geojson')
@@ -170,6 +171,7 @@ twUI <- function(id) {
                     choices = setNames(
                       c(
                         'place',
+                        'mineralExtractionSites',
                         'censusSubdivision',
                         'censusDivision',
                         'owbQuaternary',
@@ -178,6 +180,7 @@ twUI <- function(id) {
                       ),
                       c(
                         'Places',
+                        'Mineral Extraction Sites',
                         'Census subdivisions',
                         'Census divisions',
                         'Quaternary watersheds',
@@ -188,6 +191,7 @@ twUI <- function(id) {
                     choicesOpt = list(
                       content = c(
                         "<div> <i class='fas fa-square' style = 'color: black;'></i> Places </div>",
+                        "<div> <i class='fas fa-square' style = 'color: #800000;'></i> Mineral Extraction Sites </div>",
                         "<div> <i class='fas fa-square' style = 'color: #A9A9A9;'></i> Census subdivisions </div>",
                         "<div> <i class='fas fa-square' style = 'color: #343a40;'></i> Census divisions </div>",
                         "<div> <i class='fas fa-square' style = 'color: #191970;'></i> Quaternary watersheds </div>",
@@ -289,6 +293,10 @@ twUI <- function(id) {
         tags$ul(
           tags$li(tags$a("Canada 2021 Census – Boundary files", href="https://www12.statcan.gc.ca/census-recensement/2021/geo/sip-pis/boundary-limites/index2021-eng.cfm?year=21", target="_blank"))
         ),
+        h6("Ontario Mineral Extraction Sites"),
+        tags$ul(
+          tags$li(tags$a("Government of Canada - CanVec", href="https://open.canada.ca/data/en/dataset/8ba2aa2a-7bb9-4448-b4d7-f164409fe056", target="_blank"))
+        ),
         h6("Census subdivisions"),
         tags$ul(
           tags$li(tags$a("Canada 2021 Census – Boundary files", href="https://www12.statcan.gc.ca/census-recensement/2021/geo/sip-pis/boundary-limites/index2021-eng.cfm?year=21", target="_blank"))
@@ -372,6 +380,8 @@ twServer <- function(input, output, session) {
       addMapPane("placeHighZoom_pane", zIndex = 460) %>%
       addMapPane("placeLowZoomLabels_pane", zIndex = 460) %>%
       addMapPane("placeHighZoomLabels_pane", zIndex = 460) %>%
+      addMapPane("mineralExtractionSites_pane", zIndex = 457) %>%
+      addMapPane("mineralExtractionSitesLabels_pane", zIndex = 456) %>%
       addMapPane("censusSubdivisionLabels_pane", zIndex = 455) %>%
       addMapPane("censusSubdivision_pane", zIndex = 450) %>%
       addMapPane("censusDivisionLabels_pane", zIndex = 445) %>%
@@ -382,6 +392,10 @@ twServer <- function(input, output, session) {
       addMapPane("owbTertiary_pane", zIndex = 420) %>%
       addMapPane("watershedBounds_pane", zIndex = 410) %>%
       
+      addPolygons(
+        data = mineralExtractionSites, group = 'mineralExtractionSites', options = pathOptions(pane = "mineralExtractionSites_pane"), weight = 1, color = "#800000", fill = FALSE, opacity = 1
+      ) %>%
+      hideGroup("mineralExtractionSites") %>%
       addPolygons(
         data = censusSubdivision, group = 'censusSubdivision', options = pathOptions(pane = "censusSubdivision_pane"), weight = 1, color = "#A9A9A9", fill = FALSE, opacity = 1
       ) %>%
@@ -487,6 +501,22 @@ twServer <- function(input, output, session) {
         )
       ) %>%
       hideGroup("censusSubdivisionLabels") %>%
+      addLabelOnlyMarkers(
+        data = st_point_on_surface(mineralExtractionSites),
+        group = 'mineralExtractionSitesLabels',
+        options = pathOptions(pane = "mineralExtractionSitesLabels_pane"),
+        label = mineralExtractionSites$site_type,
+        labelOptions = labelOptions(
+          noHide = TRUE,
+          textOnly = TRUE,
+          style = list(
+            "color" = "#800000",
+            "text-shadow" = "-1px -1px 2px white, 1px -1px 2px white, -1px 1px 2px white, 1px 1px 2px white",
+            "font-size" = "8px"
+          )
+        )
+      ) %>%
+      hideGroup("mineralExtractionSitesLabels") %>%
       addLabelOnlyMarkers(
         data = placeLowZoom,
         group = 'placeLowZoomLabels',
@@ -624,6 +654,7 @@ twServer <- function(input, output, session) {
       'owbTertiary',
       'censusSubdivision',
       'censusDivision',
+      'mineralExtractionSites',
       'watershedBounds',
       'upperThamesStation',
       'glbindStation',
@@ -638,7 +669,8 @@ twServer <- function(input, output, session) {
           'owbQuaternary',
           'owbTertiary',
           'censusSubdivision',
-          'censusDivision'
+          'censusDivision',
+          'mineralExtractionSites'
         )) {
           proxy %>% showGroup(paste0(lyr, 'Labels'))
         }

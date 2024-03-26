@@ -40,7 +40,7 @@ mbtiles files were then uploaded to $HOME/data from the data processing server (
 ```
 cd ${DATA_DIR}/served/mbtiles
 
-for i in agriculture bathymetry bathymetry_contour boundary ca_watershed elev geology hillshade land_cover nutrient wetland slope waterbody watercourse watershed wetland thames-watershed-elev thames-watershed-hillshade thames-watershed-land-cover thames_watershed_cartographic thames_watershed_contextual thames_watershed_feature 
+for i in agriculture bathymetry bathymetry_contour boundary ca_watershed elev geology hillshade land_cover mines nutrient wetland slope waterbody watercourse watershed wetland thames-watershed-elev thames-watershed-hillshade thames-watershed-land-cover thames_watershed_cartographic thames_watershed_contextual thames_watershed_feature
 do
     echo ${i}.mbtiles >> fileList.txt
 done
@@ -68,20 +68,28 @@ Data was aquired and processed on an ubuntu server 22.04 LTS machine with the fo
 - 32 gb RAM
 - NVMe SSD storage
 
-With the following libs installed and in use here (among others):
+With the following libs installed and in use (among others):
 
 - docker + docker-compose
 - psql (postgresql-client)
 - gdal 3.4.1 (gdal-bin libgdal-dev libgeos-dev libgeos++-dev proj-bin)
 - python3.10 + python3.10-venv + python3-gdal
-- libvips libvips-dev libtiff5 optipng pngquant csvkit miller sqlite3
+- libvips libvips-dev libtiff5 optipng pngquant csvkit miller sqlite3 nano
+
+The entire workflow used to create a local database, download and ingest data, and then export layers and tables for the tile server and R Shiny app is listed below.
+
+A copy of the scripts and docker-compose.yaml file refered to below are held in the `db` directory of this repository.
+
+
+### Define Variables:
 
 ```
-# 1. Variables: paste in ${HOME}/workspace/repos/projects/nature-analytics/.env
+nano ${HOME}/workspace/repos/projects/nature-analytics/.env
+
 export DB_DIR=${HOME}/volumes/projects/nature-analytics
-export DB_PASSWORD=EdAnLUzB27r6
+export DB_PASSWORD=*****
 export READ_ONLY_USER=read_only
-export READ_ONLY_PASSWORD=K6vJ3iw2XFwn
+export READ_ONLY_PASSWORD=*****
 export DB=great_lakes_basins
 export DB_PORT=54323
 export DB_USER=postgres
@@ -91,11 +99,12 @@ export SCRIPTS=${HOME}/workspace/repos/projects/nature-analytics
 export PGPASSWORD=${DB_PASSWORD}
 export PGSTRING="host=${DB_HOST} port=${DB_PORT} user=${DB_USER} dbname=${DB} password=${DB_PASSWORD}"
 export DATA_DIR=${HOME}/workspace/project-data/nature-analytics/great-lakes-basins
+```
 
-# Build db.
+### Build db.
+
+```
 docker pull postgis/postgis:15-3.4
-docker pull pramsey/pg_tileserv
-docker pull maptiler/tileserver-gl
 
 source ${HOME}/workspace/repos/projects/nature-analytics/.env && cd ${SCRIPTS} && docker compose up -d
 
@@ -120,6 +129,8 @@ psql -h ${DB_HOST} -p ${DB_PORT} -d ${DB} -U ${DB_USER} -c "create schema elevat
 psql -h ${DB_HOST} -p ${DB_PORT} -d ${DB} -U ${DB_USER} -c "create schema geology;"
 
 psql -h ${DB_HOST} -p ${DB_PORT} -d ${DB} -U ${DB_USER} -c "create schema land_cover;"
+
+psql -h ${DB_HOST} -p ${DB_PORT} -d ${DB} -U ${DB_USER} -c "create schema mine;"
 
 psql -h ${DB_HOST} -p ${DB_PORT} -d ${DB} -U ${DB_USER} -c "create schema nutrient;"
 
@@ -147,6 +158,8 @@ psql -h ${DB_HOST} -p ${DB_PORT} -d ${DB} -U ${DB_USER} -c "grant usage on schem
 
 psql -h ${DB_HOST} -p ${DB_PORT} -d ${DB} -U ${DB_USER} -c "grant usage on schema land_cover TO ${READ_ONLY_USER};"
 
+psql -h ${DB_HOST} -p ${DB_PORT} -d ${DB} -U ${DB_USER} -c "grant usage on schema mine TO ${READ_ONLY_USER};"
+
 psql -h ${DB_HOST} -p ${DB_PORT} -d ${DB} -U ${DB_USER} -c "grant usage on schema nutrient TO ${READ_ONLY_USER};"
 
 psql -h ${DB_HOST} -p ${DB_PORT} -d ${DB} -U ${DB_USER} -c "grant usage on schema soil TO ${READ_ONLY_USER};"
@@ -173,6 +186,8 @@ psql -h ${DB_HOST} -p ${DB_PORT} -d ${DB} -U ${DB_USER} -c "alter default privil
 
 psql -h ${DB_HOST} -p ${DB_PORT} -d ${DB} -U ${DB_USER} -c "alter default privileges in schema land_cover grant select on tables to ${READ_ONLY_USER};"
 
+psql -h ${DB_HOST} -p ${DB_PORT} -d ${DB} -U ${DB_USER} -c "alter default privileges in schema mine grant select on tables to ${READ_ONLY_USER};"
+
 psql -h ${DB_HOST} -p ${DB_PORT} -d ${DB} -U ${DB_USER} -c "alter default privileges in schema nutrient grant select on tables to ${READ_ONLY_USER};"
 
 psql -h ${DB_HOST} -p ${DB_PORT} -d ${DB} -U ${DB_USER} -c "alter default privileges in schema soil grant select on tables to ${READ_ONLY_USER};"
@@ -184,9 +199,11 @@ psql -h ${DB_HOST} -p ${DB_PORT} -d ${DB} -U ${DB_USER} -c "alter default privil
 psql -h ${DB_HOST} -p ${DB_PORT} -d ${DB} -U ${DB_USER} -c "alter default privileges in schema watershed grant select on tables to ${READ_ONLY_USER};"
 
 psql -h ${DB_HOST} -p ${DB_PORT} -d ${DB} -U ${DB_USER} -c "alter default privileges in schema wetland grant select on tables to ${READ_ONLY_USER};"
+```
 
+### Set up Python
 
-# Set up Python env.
+```
 python3 -m venv ${ENV} --system-site-packages
 source ${ENV}/bin/activate
 pip install xlsx2csv
@@ -195,14 +212,14 @@ git clone https://github.com/mapbox/mbutil.git
 cd mbutil
 sudo python3 setup.py install
 mb-util
+```
 
 
+### MODULE A
 
-###### MODULE A ######
+#### Great lakes watersheds
 
-
-### Great lakes watersheds
-
+```
 # Download MNRF watershed boundaries: https://geohub.lio.gov.on.ca/maps/mnrf::ontario-watershed-boundaries-owb/about
 mkdir -p ${DATA_DIR}/watershed; cd ${DATA_DIR}/watershed
 
@@ -260,10 +277,11 @@ rm -R OWBQUAT.zip
 
 # Get bounds of great lakes basin: -93.213865, 40.394681, -73.852756, 50.779126
 ogrinfo -so PG:"host=${DB_HOST} port=${DB_PORT} user=${DB_USER} dbname=${DB} password=${DB_PASSWORD}" watershed.owb_primary | grep "Extent:"
+```
 
+#### SRTM1: 30m elevation
 
-### SRTM1: 30m elevation
-
+```
 # Download SRTM reference grid and extract tiles within buffer.
 mkdir -p ${DATA_DIR}/srtm; cd ${DATA_DIR}/srtm
 
@@ -271,10 +289,11 @@ wget https://dwtkns.com/srtm30m/srtm30m_bounding_boxes.json
 
 ogr2ogr -sql "select dataFile from srtm30m_bounding_boxes" -spat -93.5 40 -73.5 51 srtm-grid-cells.csv srtm30m_bounding_boxes.json 
 
-# Download selected SRTM tiles
-export USGS_PASSWORD=xyz
+# Download selected SRTM tiles (requires registering for a USGS Earth Data account)
+export USGS_USER=abc
+export USGS_PASSWORD=*****
 
-time . ${SCRIPTS}/downloadSRTM.sh srtm-grid-cells.csv "${DATA_DIR}/srtm/tiles" "ssastbury" "${USGS_PASSWORD}"
+time . ${SCRIPTS}/downloadSRTM.sh srtm-grid-cells.csv "${DATA_DIR}/srtm/tiles" "${USGS_USER}" "${USGS_PASSWORD}"
 
 rm *hgt.zip
 
@@ -298,12 +317,11 @@ raster2pgsql -s 4269 -d -C -l 2,4,8,16 -I -F -t 1000x1000 ${DATA_DIR}/srtm/srtm.
 raster2pgsql -s 4269 -d -C -l 2,4,8,16 -I -F -t 1000x1000 ${DATA_DIR}/srtm/hillshade.tif elevation.hillshade_30m | psql -h ${DB_HOST} -p ${DB_PORT} -d ${DB} -U ${DB_USER}
 
 raster2pgsql -s 4269 -d -C -l 2,4,8,16 -I -F -t 1000x1000 ${DATA_DIR}/srtm/slope.tif elevation.slope_30m | psql -h ${DB_HOST} -p ${DB_PORT} -d ${DB} -U ${DB_USER}
+```
 
-# gdaldem color-relief -exact_color_entry landcover_2020_clipped.tif col.txt landcover_2020_colorized.tif
+#### Watercourses and waterbodies
 
-
-### Watercourses and waterbodies
-
+```
 mkdir -p ${DATA_DIR}/waterbody; cd ${DATA_DIR}/waterbody
 
 # ON water body - Ontario Hydro Network (OHN): https://geohub.lio.gov.on.ca/datasets/mnrf::ontario-hydro-network-ohn-waterbody/explore
@@ -381,10 +399,11 @@ ogr2ogr \
     -sql "select SHAPE from main_lakes" \
     PG:"host=${DB_HOST} port=${DB_PORT} user=${DB_USER} dbname=${DB} password=${DB_PASSWORD}" \
     Great_Lakes_Shorelines.gpkg
+```
 
+#### Land cover
 
-### Land cover
-
+```
 mkdir ${DATA_DIR}/land-cover; cd ${DATA_DIR}/land-cover
 
 # CEC north america land cover map: http://www.cec.org/north-american-environmental-atlas/land-cover-30m-2020/
@@ -404,10 +423,11 @@ gdalwarp \
 raster2pgsql -s 3347 -d -C -l 2,4,8,16 -I -F -t 1000x1000 ${DATA_DIR}/land-cover/landcover_2020_clipped.tif land_cover.land_cover_2020 | psql -h ${DB_HOST} -p ${DB_PORT} -d ${DB} -U ${DB_USER}
 
 rm land_cover_2020_30m_tif.zip
+```
 
+#### Administration boundaries
 
-### Administration boundaries
-
+```
 mkdir ${DATA_DIR}/boundaries; cd ${DATA_DIR}/boundaries
 
 # CA 2021 census boundaries: https://www12.statcan.gc.ca/census-recensement/2021/geo/sip-pis/boundary-limites/index2021-eng.cfm?year=21
@@ -526,10 +546,11 @@ do
             tracts/${l}.shp
     fi
 done
+```
 
+#### Bathymetry
 
-### Bathymetry
-
+```
 # Great lakes data available from NOAA: https://www.ngdc.noaa.gov/mgg/greatlakes/
 
 mkdir ${DATA_DIR}/bathymetry; cd ${DATA_DIR}/bathymetry
@@ -656,10 +677,11 @@ ogr2ogr \
     ${DATA_DIR}/bathymetry/Lake_Ontario_Contours.shp
 
 rm Lake_Ontario_Contours.zip
+```
 
+#### Wetlands
 
-### Wetlands
-
+```
 mkdir ${DATA_DIR}/wetland; cd ${DATA_DIR}/wetland
 
 # ON MNRF: https://geohub.lio.gov.on.ca/datasets/mnrf::wetlands/about
@@ -832,10 +854,11 @@ ogr2ogr \
     ${DATA_DIR}/wetland/IN_shapefile_wetlands/IN_Wetlands.shp
 
 rm IN_shapefile_wetlands.zip
+```
 
+#### Geology 
 
-### Geology 
-
+```
 mkdir ${DATA_DIR}/geology; cd ${DATA_DIR}/geology
 
 # ON bedrock geology: https://www.geologyontario.mndm.gov.on.ca/ogsearth.html
@@ -960,10 +983,11 @@ psql -h ${DB_HOST} -p ${DB_PORT} -d ${DB} -U ${DB_USER} -c "\copy geology.us_geo
 rm IN.zip
 
 psql -h ${DB_HOST} -p ${DB_PORT} -d ${DB} -U ${DB_USER} -c "update geology.us_geology set geom = st_makevalid(geom) where not st_isvalid(geom);"
+```
 
+#### Agricultural
 
-### Agricultural
-
+```
 mkdir ${DATA_DIR}/agriculture; cd ${DATA_DIR}/agriculture
 
 # Canada agg census: https://ftp.maps.canada.ca/pub/statcan_statcan/Agriculture_Agriculture/census_of_agriculture-recensement_agriculture/2021/
@@ -1088,10 +1112,11 @@ where table_schema = 'agriculture' and lower(column_name) != column_name
 psql -h ${DB_HOST} -p ${DB_PORT} -d ${DB} -U ${DB_USER} -c "CREATE VIEW agriculture.v_us_crops_and_plants_geom as select a.*, geom from agriculture.us_crops_and_plants a join boundary.us_county b on(a.fips::text = b.geoid);"
 
 psql -h ${DB_HOST} -p ${DB_PORT} -d ${DB} -U ${DB_USER} -c "CREATE VIEW agriculture.v_us_farms_geom as select a.*, geom from agriculture.us_farms a join boundary.us_county b on(a.fips::text = b.geoid);"
+```
 
+#### Conservation authorities: data manually downloaded from client-provided dropbox link. XLSX tables edited to add ID col for matching.
 
-### Conservation authorities: data manually downloaded from client-provided dropbox link. XLSX tables edited to add ID col for matching.
-
+```
 cd $DATA_DIR/conservation-authorities
 
 export SHAPE_RESTORE_SHX=YES
@@ -1143,10 +1168,11 @@ psql -h ${DB_HOST} -p ${DB_PORT} -d ${DB} -U ${DB_USER} -c "\copy ca_data.ofat_w
 psql -h ${DB_HOST} -p ${DB_PORT} -d ${DB} -U ${DB_USER} -c "DROP VIEW IF EXISTS ca_data.v_ofat_watershed; CREATE VIEW ca_data.v_ofat_watershed as select a.name, watershed_area_km2, watershed_mean_elevation_m, watershed_max_elevation_m, watershed_mean_slope_pcent, length_of_main_channel_km, max_channel_elevation_m, min_channel_elevation_m, slope_of_main_channel_m_km, slope_of_main_channel_pcent, annual_temperature_c, annual_precipitation_mm, community_infrastructure_area, agriculture_and_undifferentiated_rural_land_use_area, open_water_area_km2, shoreline, mudflats, marsh, swamp, fen, bog, heath, sparse_treed, treed_upland, deciduous_treed, mixed_treed, coniferous_treed, plantations_treed_cultivated, hedge_rows, disturbance, open_cliff_and_talus, alvar, sand_barren_and_dune, open_tallgrass_prairie, tallgrass_savannah, tallgrass_woodland, sand_gravel_mine_tailings_extraction, bedrock, a.geom from ca_data.ofat_watershed a left join ca_data.ofat_watershed_lookup b on (b.id = a.name);"
 
 psql -h ${DB_HOST} -p ${DB_PORT} -d ${DB} -U ${DB_USER} -c "DROP VIEW IF EXISTS ca_data.v_ofat_watershed_tkn; CREATE VIEW ca_data.v_ofat_watershed_tkn as select distinct a.name, log10_area, community_prop, ag_prop, wetland_prop, treed_prop, a.geom from ca_data.ofat_watershed a left join ca_data.ofat_watershed_tkn b on (b.id = a.name);"
+```
 
+#### Nutrients
 
-### Nutrients
-
+```
 mkdir ${DATA_DIR}/nutrients; cd ${DATA_DIR}/nutrients
 
 # Great Lakes Basin Integrated Nutrient Dataset (2000-2019): https://open.canada.ca/data/en/dataset/8eecfdf5-4fbc-43ec-a504-7e4ee41572eb
@@ -1243,10 +1269,70 @@ ogr2ogr \
 psql -h ${DB_HOST} -p ${DB_PORT} -d ${DB} -U ${DB_USER} -c "update nutrient.sparrow_nitrogen set geom = st_makevalid(geom) where not st_isvalid(geom);"
 
 rm *.zip
+```
 
+#### Mines
 
-### Export vector tiles.
+```
+mkdir -p $DATA_DIR/mines; cd $DATA_DIR/mines
 
+# Geology Ontario abandoned mines: https://www.hub.geologyontario.mines.gov.on.ca/
+wget https://www.geologyontario.mndm.gov.on.ca/mines/ogs/databases/AMIS_2022_04.zip
+
+unzip AMIS_2022_04.zip
+
+rm AMIS_2022_04.zip
+
+source ${ENV}/bin/activate
+
+xlsx2csv -n "AMIS_SITES_APR2022" ./AMIS_2022_04/EXCEL_spreadsheets/AMIS_SITES_APR2022.xlsx amis_sites.csv
+
+ogr2ogr -lco OVERWRITE=TRUE -lco GEOMETRY_NAME=geom -lco FID=fid -lco SCHEMA=mine \
+    -nlt POINT -nln amis_mine -f PostgreSQL -makevalid -a_srs EPSG:4326 \
+    -oo X_POSSIBLE_NAMES=LONGITUDE -oo Y_POSSIBLE_NAMES=LATITUDE -oo KEEP_GEOM_COLUMNS=NO \
+    PG:"host=${DB_HOST} port=${DB_PORT} user=${DB_USER} dbname=${DB} password=${DB_PASSWORD}" \
+    amis_sites.csv
+
+# Fix col names.
+psql -h ${DB_HOST} -p ${DB_PORT} -d ${DB} -U ${DB_USER}
+
+DO $$
+DECLARE
+  row record;
+BEGIN
+    FOR row IN
+        SELECT column_name
+        FROM
+            information_schema.columns
+        WHERE
+            table_schema = 'mine' AND table_name = 'amis_mine' AND column_name LIKE '% %' LOOP
+
+        EXECUTE 'ALTER TABLE mine.amis_mine RENAME "' || row.column_name || '" TO "' || REPLACE(row.column_name , ' ', '_') || '";';
+    END LOOP;
+END;
+
+# Canvec resource management: https://open.canada.ca/data/en/dataset/92dbea79-f644-4a62-b25e-8eb993ca0264
+wget https://ftp.maps.canada.ca/pub/nrcan_rncan/vector/canvec/fgdb/Res_MGT/canvec_50K_ON_Res_MGT_fgdb.zip
+
+unzip canvec_50K_ON_Res_MGT_fgdb.zip 
+
+rm canvec_50K_ON_Res_MGT_fgdb.zip
+
+ogr2ogr -lco OVERWRITE=TRUE -lco GEOMETRY_NAME=geom -lco FID=fid -lco SCHEMA=mine \
+    -nlt MULTIPOLYGON -nln canvec_extraction_site -f PostgreSQL -makevalid -t_srs EPSG:4326 \
+    -sql "select 'ore' as site_type from ore_2" \
+    PG:"host=${DB_HOST} port=${DB_PORT} user=${DB_USER} dbname=${DB} password=${DB_PASSWORD}" \
+    canvec_50K_ON_Res_MGT.gdb
+
+ogr2ogr -nlt MULTIPOLYGON -nln canvec_extraction_site -f PostgreSQL -makevalid -t_srs EPSG:4326 -append \
+    -sql "select 'aggregate' as site_type from aggregate_2" \
+    PG:"host=${DB_HOST} port=${DB_PORT} user=${DB_USER} dbname=${DB} password=${DB_PASSWORD} schemas=mine" \
+    canvec_50K_ON_Res_MGT.gdb
+```
+
+#### Export vector tiles.
+
+```
 mkdir -p $DATA_DIR/served/mbtiles
 
 cd $DATA_DIR/served/mbtiles
@@ -1385,7 +1471,7 @@ rm -R watershed.mbtiles
 tile-join -o watershed.mbtiles owb_primary.mbtiles owb_secondary.mbtiles owb_tertiary.mbtiles owb_quaternary.mbtiles
 
 
-# Wetland
+# Wetlands
 ogr2ogr -f GeoJSON ${DATA_DIR}/served/geojson/.geojson -sql "select type, geom from wetland.on_wetland" \
     PG:"host=${DB_HOST} port=${DB_PORT} user=${DB_USER} dbname=${DB} password=${DB_PASSWORD}" \
     | tippecanoe -z 12 --force --coalesce-smallest-as-needed -o on_wetland.mbtiles --name on_wetland
@@ -1397,8 +1483,21 @@ ogr2ogr -f GeoJSON ${DATA_DIR}/served/geojson/.geojson -sql "select type, geom f
 tile-join -f -pk -o wetland.mbtiles on_wetland.mbtiles us_wetland.mbtiles
 
 
-### Export csv tables.
+# Mines
+ogr2ogr -f GeoJSON /dev/stdout -sql "select * from mine.amis_mine" \
+    PG:"host=${DB_HOST} port=${DB_PORT} user=${DB_USER} dbname=${DB} password=${DB_PASSWORD}" \
+    | tippecanoe -B 8 -z 12 --force -o amis_mine.mbtiles --name amis_mine
 
+ogr2ogr -f GeoJSON /dev/stdout -sql "select site_type, geom from mine.canvec_extraction_site" \
+    PG:"host=${DB_HOST} port=${DB_PORT} user=${DB_USER} dbname=${DB} password=${DB_PASSWORD}" \
+    | tippecanoe -z 12 --force --coalesce-smallest-as-needed -o canvec_extraction_site.mbtiles --name canvec_extraction_site
+
+tile-join -f -pk -o mines.mbtiles amis_mine.mbtiles canvec_extraction_site.mbtiles
+```
+
+#### Export csv tables.
+
+```
 mkdir -p $DATA_DIR/served/csv
 
 cd $DATA_DIR/served/csv
@@ -1408,10 +1507,11 @@ psql -h ${DB_HOST} -p ${DB_PORT} -d ${DB} -U ${DB_USER} -c "\copy (select id, mo
 
 # US Geology.
 psql -h ${DB_HOST} -p ${DB_PORT} -d ${DB} -U ${DB_USER} -c "\copy (select unit_link, lith_rank, lith1, lith2, lith3, lith4, lith5, low_lith, lith_form, lith_com from geology.us_geology_attribute) to 'us_geology_attribute.csv' csv header"
+```
 
+#### Export raster tiles.
 
-### Export raster tiles.
-
+```
 mkdir ${DATA_DIR}/served/raster-tiles
 
 
@@ -1449,14 +1549,14 @@ mb-util ${DATA_DIR}/served/raster-tiles/bathymetry ${DATA_DIR}/served/mbtiles/ba
 
 # Land cover
 mb-util ${DATA_DIR}/served/raster-tiles/land-cover ${DATA_DIR}/served/mbtiles/land_cover.mbtiles
+```
 
 
+### MODULE B
 
-###### MODULE B ######
+#### Additional data download and import
 
-
-### Additional data download and import
-
+```
 # Canvec map layers for ON: https://open.canada.ca/data/en/dataset/8ba2aa2a-7bb9-4448-b4d7-f164409fe056
 
 psql -h ${DB_HOST} -p ${DB_PORT} -d ${DB} -U ${DB_USER} -c "create schema canvec;"
@@ -1749,7 +1849,7 @@ psql -h ${DB_HOST} -p ${DB_PORT} -d ${DB} -U ${DB_USER} -c "alter default privil
 
 psql -h ${DB_HOST} -p ${DB_PORT} -d ${DB} -U ${DB_USER} -c "create table thames_watershed.ofat_watershed as select * from ca_data.ofat_watershed where name = 'Thames_R'"
 
-for LYR in boundary.on_census_subdivision boundary.on_census_division canvec.label canvec.railway canvec.road canvec.trail canvec.waterbody canvec.watercourse canvec.wetland canvec.woodland census_2021.population_centre geology.on_geology nutrient.sparrow_nitrogen nutrient.sparrow_phosphorus watershed.owb_quaternary watershed.owb_tertiary hydat.station soil.soil_complex
+for LYR in boundary.on_census_subdivision boundary.on_census_division canvec.label canvec.railway canvec.road canvec.trail canvec.waterbody canvec.watercourse canvec.wetland canvec.woodland census_2021.population_centre geology.on_geology nutrient.sparrow_nitrogen nutrient.sparrow_phosphorus watershed.owb_quaternary watershed.owb_tertiary hydat.station soil.soil_complex mine.canvec_extraction_site
 do
     IFS='.' read -ra ARR <<< "${LYR}"
     SCHEMA=${ARR[0]}
@@ -1823,10 +1923,11 @@ gdalwarp \
     -cutline PG:"host=${DB_HOST} port=${DB_PORT} user=${DB_USER} dbname=${DB} password=${DB_PASSWORD}" -cl thames_watershed.ofat_watershed -crop_to_cutline \
     ${DATA_DIR}/land-cover/land_cover_2020_30m_tif/NA_NALCMS_landcover_2020_30m/data/NA_NALCMS_landcover_2020_30m.tif \
     ${DATA_DIR}/thames-watershed/landcover_2020_clipped.tif
+```
 
+#### Create basemap layers, served from the tile server as png iamges.
 
-### Create basemap layers, served from the tile server as png iamges.
-
+```
 # Cartographic basemap layers.
 
 ogr2ogr -f GeoJSON /dev/stdout \
@@ -1879,7 +1980,6 @@ tile-join -f -pk -o ${DATA_DIR}/served/mbtiles/thames_watershed_cartographic.mbt
     ${DATA_DIR}/served/mbtiles/thames_watershed_woodland.mbtiles \
     ${DATA_DIR}/served/mbtiles/thames_watershed_population_centre.mbtiles
 
-
 # Raster basemap layers.
 
 gdal2tiles.py -e -xyz -w none --zoom 7-14 --processes 4 ${DATA_DIR}/thames-watershed/color_relief.tif ${DATA_DIR}/served/raster-tiles/thames-watershed-elev
@@ -1903,10 +2003,11 @@ gdal2tiles.py -e -x --xyz -w none --zoom 7-14 --processes 4 ${DATA_DIR}/thames-w
 rm ${DATA_DIR}/served/mbtiles/thames-watershed-land-cover.mbtiles
 
 mb-util ${DATA_DIR}/served/raster-tiles/thames-watershed-land-cover ${DATA_DIR}/served/mbtiles/thames-watershed-land-cover.mbtiles
+```
 
+#### Create geojson files for leaflet map.
 
-### Create geojson files for leaflet map.
-
+```
 mkdir ${DATA_DIR}/served/geojson
 
 # Contextual/overlay layers.
@@ -1937,6 +2038,10 @@ ogr2ogr -f GeoJSON ${DATA_DIR}/served/geojson/thames_watershed_label_low_zoom.ge
 
 ogr2ogr -f GeoJSON ${DATA_DIR}/served/geojson/thames_watershed_label_high_zoom.geojson \
     -sql "select name_en, geom from thames_watershed.label where named_feature_descriptor in (912, 951, 956, 920, 952)" \
+    PG:"host=${DB_HOST} port=${DB_PORT} user=${DB_USER} dbname=${DB} password=${DB_PASSWORD}"
+
+ogr2ogr -f GeoJSON ${DATA_DIR}/served/geojson/thames_watershed_canvec_extraction_site.geojson \
+    -sql "select * from thames_watershed.canvec_extraction_site" \
     PG:"host=${DB_HOST} port=${DB_PORT} user=${DB_USER} dbname=${DB} password=${DB_PASSWORD}"
 
 
@@ -1971,6 +2076,8 @@ psql -h ${DB_HOST} -p ${DB_PORT} -d ${DB} -U ${DB_USER} -c "\copy (select statio
 psql -h ${DB_HOST} -p ${DB_PORT} -d ${DB} -U ${DB_USER} -c "\copy (select station_number, year, month, monthly_mean, min, max from hydat.daily_level where station_number in (select distinct station_number from thames_watershed.station)) to '${DATA_DIR}/served/csv/thames_watershed_hydat_monthly_level.csv' csv header"
 
 
-# https://data-cwdv.ca/applications/public.html?publicuser=Public#cwdv/stationoverview
-Draw on map > Table > Time series > Select up to 9 stations at a time for chosen var (water temp) > Graph > Set date range to 1 year > Download as csv & Manually edit in Excel, retaining station_no, timestamp, and value columns.
+# Conservation Area station water temperature records: https://data-cwdv.ca/applications/public.html?publicuser=Public#cwdv/stationoverview
+Draw on map > Table > Time series > Select up to 9 stations at a time for chosen var (water temp) > Graph > Set date range to 1 year > Download as csv & Manually edit in Excel, retaining station_no, timestamp, and value columns - saved as "upper_thames_ts.csv"
+
+Station coordinates extracted and exported to geojson via QGIS as "upper_thames_stations.geojson"
 ```

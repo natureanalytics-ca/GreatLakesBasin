@@ -187,6 +187,14 @@ mapUI <- function(id) {
         tags$ul(
           tags$li(tags$a("US Census Bureau – TIGER/Line Shapefiles", href="https://www.census.gov/cgi-bin/geo/shapefiles/index.php", target="_blank"))
         ),
+        h6("ON Abandoned Mines Information System"),
+        tags$ul(
+          tags$li(tags$a("Geology Ontario", href="https://www.hub.geologyontario.mines.gov.on.ca/", target="_blank"))
+        ),
+        h6("Ontario Mineral Extraction Sites"),
+        tags$ul(
+          tags$li(tags$a("Government of Canada - CanVec", href="https://open.canada.ca/data/en/dataset/8ba2aa2a-7bb9-4448-b4d7-f164409fe056", target="_blank"))
+        ),
         h6("Great Lakes Basin Integrated Nutrient Dataset"),
         tags$ul(
           tags$li(tags$a("Great Lakes Basin Integrated Nutrient Dataset (2000-2019)", href="https://open.canada.ca/data/en/dataset/8eecfdf5-4fbc-43ec-a504-7e4ee41572eb", target="_blank"))
@@ -328,6 +336,10 @@ mapServer <- function(input, output, session) {
       id='land_cover'
     ) %>%
     add_source(
+      sources[['mines']],
+      id='mines'
+    ) %>%
+    add_source(
       sources[['nutrient']],
       id='nutrient'
     ) %>%
@@ -373,6 +385,8 @@ mapServer <- function(input, output, session) {
     add_layer(vector_layers[['sparrow_phosphorus']][['style']]) %>%
     add_layer(vector_layers[['sparrow_nitrogen']][['style']]) %>%
     add_layer(vector_layers[['glbind_latest_nutrient']][['style']]) %>%
+    add_layer(vector_layers[['canvec_extraction_site']][['style']]) %>%
+    add_layer(vector_layers[['amis_mine']][['style']]) %>%
     add_layer(vector_layers[['us_county']][['style']]) %>%
     add_layer(vector_layers[['us_tract']][['style']]) %>%
     add_layer(vector_layers[['on_census_subdivision']][['style']]) %>%
@@ -401,6 +415,8 @@ mapServer <- function(input, output, session) {
     add_popups('sparrow_phosphorus', mapbox_popup(vector_layers[['sparrow_phosphorus']][['tooltip']], event = 'hover')) %>%
     add_popups('sparrow_nitrogen', mapbox_popup(vector_layers[['sparrow_nitrogen']][['tooltip']], event = 'hover')) %>%
     add_popups('glbind_latest_nutrient', mapbox_popup(vector_layers[['glbind_latest_nutrient']][['tooltip']], event = 'hover')) %>%
+    add_popups('canvec_extraction_site', mapbox_popup(vector_layers[['canvec_extraction_site']][['tooltip']], event = 'hover')) %>%
+    add_popups('amis_mine', mapbox_popup(vector_layers[['amis_mine']][['tooltip']], event = 'hover')) %>%
     add_popups('us_county', mapbox_popup(vector_layers[['us_county']][['tooltip']], event = 'hover')) %>%
     add_popups('us_tract', mapbox_popup(vector_layers[['us_tract']][['tooltip']], event = 'hover')) %>%
     add_popups('on_census_subdivision', mapbox_popup(vector_layers[['on_census_subdivision']][['tooltip']], event = 'hover')) %>%
@@ -430,6 +446,8 @@ mapServer <- function(input, output, session) {
     add_popups('sparrow_phosphorus', vector_layers[['sparrow_phosphorus']][['popup']]) %>%
     add_popups('sparrow_nitrogen', vector_layers[['sparrow_nitrogen']][['popup']]) %>%
     add_popups('glbind_latest_nutrient', vector_layers[['glbind_latest_nutrient']][['popup']]) %>%
+    add_popups('canvec_extraction_site', vector_layers[['canvec_extraction_site']][['popup']]) %>%
+    add_popups('amis_mine', vector_layers[['amis_mine']][['popup']]) %>%
     add_popups('us_county', vector_layers[['us_county']][['popup']]) %>%
     add_popups('us_tract', vector_layers[['us_tract']][['popup']]) %>%
     add_popups('on_census_subdivision', vector_layers[['on_census_subdivision']][['popup']]) %>%
@@ -441,7 +459,7 @@ mapServer <- function(input, output, session) {
     add_popups('owb_tertiary', vector_layers[['owb_tertiary']][['popup']]) %>%
     add_popups('owb_secondary', vector_layers[['owb_secondary']][['popup']]) %>%
     add_popups('owb_primary', vector_layers[['owb_primary']][['popup']]) %>%
-    # add_popups('ca_watershed_tkn', vector_layers[['ca_watershed_tkn']][['popup']]) %>%
+    add_popups('ca_watershed_tkn', vector_layers[['ca_watershed_tkn']][['popup']]) %>%
     add_popups('ca_watershed', vector_layers[['ca_watershed']][['popup']])
   
   output$map <- renderMapboxer({map})

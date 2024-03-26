@@ -47,6 +47,9 @@
     "land_cover": {
       "mbtiles": "land_cover.mbtiles"
     },
+    "mines": {
+      "mbtiles": "mines.mbtiles"
+    },
     "nutrient": {
       "mbtiles": "nutrient.mbtiles"
     },

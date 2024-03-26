@@ -1,0 +1,43 @@
+version: "3"
+
+services:
+  db:
+    restart: always
+    container_name: nature-analytics-db
+    image: postgis/postgis:15-3.4
+    ports:
+      - "${DB_PORT}:5432"
+    volumes:
+      - ${DB_DIR}:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    shm_size: 8G
+  tile-server:
+    restart: always
+    container_name: nature-analytics-vector-tile-server
+    image: maptiler/tileserver-gl
+    ports:
+      - "8081:8080"
+    volumes:
+      - ${DATA_DIR}/served/mbtiles:/data
+      - ./styles:/data/styles
+      - ./config.json:/data/config.json
+  # tile-server:
+  #  depends_on:
+  #    - db
+  #  restart: always
+  #  container_name: nature-analytics-tile-server
+  #  image: pramsey/pg_tileserv
+  #  ports:
+  #    - "7800:7800"
+  #  environment:
+  #    - DATABASE_URL=postgresql://$READ_ONLY_USER:$READ_ONLY_PASSWORD@db/$DB
+  # nginx:
+  #   restart: always
+  #   container_name: nature-analytics-nginx
+  #   image: nginx:1.25.3
+  #   ports:
+  #     - "8080:80"
+  #   volumes:
+  #     - ${DATA_DIR}/served/raster-tiles:/usr/share/nginx/html:ro
+  #     - ./nginx.conf:/etc/nginx/nginx.conf

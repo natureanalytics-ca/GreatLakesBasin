@@ -1,5 +1,7 @@
-url <- 'http://142.93.149.247/data/'
-styleURL <- 'http://142.93.149.247/styles/'
+# url <- 'http://142.93.149.247/data/'
+# styleURL <- 'http://142.93.149.247/styles/'
+url <- 'https://mappingon.ca/data2/'
+styleURL <- 'https://mappingon.ca/styles2/'
 
 tbls <- './data'
 tknFile <- file.path(tbls, 'ca_data_ofat_watershed_tkn_ts.csv')
@@ -75,6 +77,10 @@ sources <- list(
   'land_cover' = mapbox_source(
     type = 'raster',
     tiles = list(paste0(url, 'land_cover/{z}/{x}/{y}.pbf'))
+  ),
+  'mines' = mapbox_source(
+    type = 'vector',
+    tiles = list(paste0(url, 'mines/{z}/{x}/{y}.pbf'))
   ),
   'nutrient' = mapbox_source(
     type = 'vector',
@@ -378,6 +384,57 @@ vector_layers <- list(
     'name' = 'US Counties',
     'tooltip' = '<b>{{name}}</b>',
     'popup' = genPopUp('name')
+  ),
+  'amis_mine' = list(
+    'style' = list(
+      'id' = 'amis_mine',
+      'type' = 'circle',
+      'source' = 'mines',
+      'source-layer' = 'amis_mine',
+      'paint' = list(
+        'circle-color' = '#5C4033',
+        'circle-stroke-color' = '#808080'
+      ),
+      'layout' = list(
+        'visibility' = 'none'
+      )
+    ),
+    'name' = 'ON Abandoned Mines Information System',
+    'tooltip' = '<b>{{official name}</b>',
+    'popup' = genPopUp(
+      'official name',
+      c(
+        'amis district',
+        'amis id',
+        'closure plan',
+        'mine site class',
+        'mine site status',
+        'primary commodity',
+        'date mine opened',
+        'date mine closed',
+        'mine closure reason',
+        'hyperlinks'
+      )
+    )
+  ),
+  'canvec_extraction_site' = list(
+    'style' = list(
+      'id' = 'canvec_extraction_site',
+      'type' = 'fill',
+      'source' = 'mines',
+      'source-layer' = 'canvec_extraction_site',
+      'paint' = list(
+        'fill-color' = '#ffe3a0',
+        'fill-opacity' = 0.4,
+        'fill-outline-color' = '#808080'
+      ),
+      'layout' = list(
+        'visibility' = 'none'
+      )
+    ),
+    'name' = 'Ontario Mineral Extraction Sites',
+    'tooltip' = '<b>{{site_type}}</b>',
+    'popup' = genPopUp(NULL, 'site_type')
   ),
   'us_tract' = list(
     'style' = list(

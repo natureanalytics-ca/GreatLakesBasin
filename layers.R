@@ -2,7 +2,7 @@
 # styleURL <- 'http://142.93.149.247/styles/'
 #url <- 'https://mappingon.ca/data2/'
 #styleURL <- 'https://mappingon.ca/styles2/'
-url <- 'https://gl.natureanalytic.ca/data/'
+url <- 'https://gl.natureanalytics.ca/data/'
 styleURL <- 'https://gl.natureanalytics.ca/styles/'
 
 tbls <- './data'

@@ -99,7 +99,7 @@ mapUI <- function(id) {
                     options = pickerOptions(
                       dropdownAlignRight = 'auto',
                       maxOptions = 2,
-                      maxOptionsText = "Select up to 3",
+                      maxOptionsText = "Select up to 2",
                       style = 'color: #343a40;'
                     )
                   ),
